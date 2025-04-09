@@ -22,7 +22,7 @@ module lif_neuron_network #(
     initial begin
         for (int i = 0; i < NUM_HIDDEN; i++) begin
             for (int j = 0; j < NUM_OUTPUTS; j++) begin
-                weights[i][j] = 16'd20;
+                weights[i][j] = 16'd15 + (i * NUM_OUTPUTS + j) *5;
             end
         end
     end

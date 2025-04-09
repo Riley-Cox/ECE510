@@ -41,9 +41,9 @@ module tb_lif_neuron_network;
         rst = 0;
 
         input_currents[0] = 16'd120;
-        input_currents[1] = 16'd130;
-        input_currents[2] = 16'd140;
-        input_currents[3] = 16'd150;
+        input_currents[1] = 16'd80;
+        input_currents[2] = 16'd50;
+        input_currents[3] = 16'd90;
 
         for (int t = 0; t < 300; t++) begin
             @(posedge clk);
