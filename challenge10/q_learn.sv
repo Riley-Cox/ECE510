@@ -17,20 +17,23 @@ module q_learning_update #(
     output logic done
 );
 
+    typedef logic [6:0] addr_t;
+    addr_t addr_sa;
+
     localparam signed [DATA_WIDTH-1:0] ALPHA = 16'd102; // ~0.1 * 1024
     localparam signed [DATA_WIDTH-1:0] GAMMA = 16'd922; // ~0.9 * 1024
 
     logic signed [DATA_WIDTH-1:0] q_table [0:ROWS*COLS*ACTIONS-1];
     logic signed [DATA_WIDTH-1:0] q_sa, q_next [0:ACTIONS-1];
     logic signed [DATA_WIDTH-1:0] max_q_next, td_error, delta;
-    logic [ADDR_WIDTH-1:0] addr_sa, addr_next [0:ACTIONS-1];
+    logic [ADDR_WIDTH-1:0] addr_next [0:ACTIONS-1];
 
     typedef enum logic [1:0] {IDLE, READ, CALC, WRITE} state_t;
     state_t state, next_state;
 
     integer i;
 
-    always_ff @(posedge clk or posedge rst) begin
+    always_ff @(posedge clk) begin
         if (rst) state <= IDLE;
         else     state <= next_state;
     end
@@ -56,23 +59,24 @@ module q_learning_update #(
         end else begin
             case (state)
                 READ: begin
-                    addr_sa <= row * COLS * ACTIONS + col * ACTIONS + action;
+			addr_sa <= addr_t'(32'(row) * 32'(COLS) * 32'(ACTIONS) + 32'(col) * 32'(ACTIONS) + 32'(action));
+
                     for (i = 0; i < ACTIONS; i++)
                         addr_next[i] <= next_row * COLS * ACTIONS + next_col * ACTIONS + i;
                 end
 
                 CALC: begin
-                    q_sa <= q_table[addr_sa];
+                    q_sa <= q_table[addr_sa[6:0]];
                     for (i = 0; i < ACTIONS; i++)
                         q_next[i] <= q_table[addr_next[i]];
 
-                    max_q_next = q_next[0];
+                    max_q_next <= q_next[0];
                     for (i = 1; i < ACTIONS; i++)
                         if (q_next[i] > max_q_next)
-                            max_q_next = q_next[i];
+                            max_q_next <= q_next[i];
 
-                    td_error = reward + ((GAMMA * max_q_next) >>> 10) - q_sa;
-                    delta = (ALPHA * td_error) >>> 10;
+                    td_error <= reward + ((GAMMA * max_q_next) >>> 10) - q_sa;
+                    delta <= (ALPHA * td_error) >>> 10;
                 end
 
                 WRITE: begin
@@ -85,38 +89,5 @@ module q_learning_update #(
         end
     end
 
-endmodule
-
-// Simple Testbench
-module tb_q_learning_update;
-    logic clk, rst;
-    logic [2:0] row, col, next_row, next_col;
-    logic [1:0] action;
-    logic signed [15:0] reward;
-    logic done;
-
-    q_learning_update dut(
-        .clk(clk), .rst(rst),
-        .row(row), .col(col),
-        .next_row(next_row), .next_col(next_col),
-        .action(action), .reward(reward),
-        .done(done)
-    );
-
-    // Clock generation
-    always #5 clk = ~clk;
-
-    initial begin
-        $display("Starting Q-learning Update Test...");
-        clk = 0; rst = 1;
-        row = 3; col = 2; action = 1;
-        next_row = 3; next_col = 3; reward = 16'd20;
-
-        #10 rst = 0;
-        #100;
-
-        $display("Finished Simulation");
-        $stop;
-    end
 endmodule
 
