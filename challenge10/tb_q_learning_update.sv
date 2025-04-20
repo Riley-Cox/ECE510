@@ -1,32 +1,28 @@
 // tb_q_learning_update.sv
 
-`timescale 1ns/1ps
-
 module tb_q_learning_update;
-
     // Parameters
     parameter ROWS = 5;
     parameter COLS = 5;
     parameter ACTIONS = 4;
     parameter ADDR_WIDTH = 7;
     parameter DATA_WIDTH = 8;
-    parameter TABLE_SIZE = ROWS * COLS * ACTIONS;
 
-    // Testbench signals
+    // Inputs
     logic clk;
     logic rst;
-    logic [2:0] row, col, next_row, next_col;
+    logic [2:0] row;
+    logic [2:0] col;
     logic [1:0] action;
+    logic [2:0] next_row;
+    logic [2:0] next_col;
     logic [7:0] reward;
+
+    // Outputs
     logic [ADDR_WIDTH-1:0] addr_sa;
     logic [ADDR_WIDTH-1:0] addr_next [0:ACTIONS-1];
-    logic [DATA_WIDTH-1:0] q_table [0:TABLE_SIZE-1];
 
-    // Clock generation
-    initial clk = 0;
-    always #5 clk = ~clk;
-
-    // Instantiate the DUT
+    // Instantiate DUT
     q_learning_update #(
         .ROWS(ROWS),
         .COLS(COLS),
@@ -43,39 +39,35 @@ module tb_q_learning_update;
         .next_col(next_col),
         .reward(reward),
         .addr_sa(addr_sa),
-        .addr_next(addr_next),
-        .q_table(q_table)
+        .addr_next(addr_next)
     );
+
+    // Clock generation
+    always #5 clk = ~clk;
 
     // Stimulus
     initial begin
-        // Initialize
+        clk = 0;
         rst = 1;
-        row = 0;
-        col = 0;
-        action = 0;
-        next_row = 0;
-        next_col = 1;
+        row = 3'd0;
+        col = 3'd0;
+        action = 2'd0;
+        next_row = 3'd0;
+        next_col = 3'd1;
         reward = 8'd10;
 
-        // Clear Q-table
-        for (int i = 0; i < TABLE_SIZE; i++) begin
-            q_table[i] = 0;
+        #10 rst = 0;
+
+        repeat (10) begin
+            @(posedge clk);
         end
 
-        // Apply reset
-        #10;
-        rst = 0;
+        $display("\nFinal Q-table entries:");
+        for (int i = 0; i < ROWS * COLS * ACTIONS; i++) begin
+            $display("q_table[%0d] = %0d", i, dut.q_table[i]);
+        end
 
-        // Wait for a few clock cycles
-        #100;
-
-        // Display results
-        $display("Q[%0d] = %0d", addr_sa, q_table[addr_sa]);
-
-        #100;
         $finish;
     end
-
 endmodule
 

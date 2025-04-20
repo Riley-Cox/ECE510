@@ -16,13 +16,13 @@ module q_learning_update #(
     input logic [2:0] next_col,
     input logic [7:0] reward,
     output logic [ADDR_WIDTH-1:0] addr_sa,
-    output logic [ADDR_WIDTH-1:0] addr_next [0:ACTIONS-1],
-    output logic [DATA_WIDTH-1:0] q_table [0:(ROWS*COLS*ACTIONS)-1]
+    output logic [ADDR_WIDTH-1:0] addr_next [0:ACTIONS-1]
 );
 
     typedef logic [ADDR_WIDTH-1:0] addr_t;
     typedef logic [DATA_WIDTH-1:0] data_t;
 
+    data_t q_table [0:(ROWS*COLS*ACTIONS)-1];
     data_t q_sa;
     data_t q_next [0:ACTIONS-1];
     data_t max_q_next;
@@ -53,9 +53,9 @@ module q_learning_update #(
                     for (int i = 0; i < ACTIONS; i++) begin
                         q_next[i] <= q_table[addr_next[i]];
                     end
-                    max_q_next <= q_next[0];
+                    max_q_next = q_next[0];
                     for (int i = 1; i < ACTIONS; i++) begin
-                        if (q_next[i] > max_q_next) max_q_next <= q_next[i];
+                        if (q_next[i] > max_q_next) max_q_next = q_next[i];
                     end
                     delta <= alpha * (reward + gamma * max_q_next - q_sa) / 100;
                     state <= UPDATE;
