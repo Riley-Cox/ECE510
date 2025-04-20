@@ -1,79 +1,69 @@
-// tb_q_learning_update.sv
-
 module tb_q_learning_update;
 
-  // Parameters
-  parameter ROWS = 5;
-  parameter COLS = 5;
-  parameter ACTIONS = 4;
-  parameter ADDR_WIDTH = 7;
-  parameter DATA_WIDTH = 8;
-  parameter QTABLE_SIZE = ROWS * COLS * ACTIONS;
+    // Declare the necessary signals
+    logic clk;
+    logic rst;
+    logic [2:0] row, col, next_row, next_col;
+    logic [1:0] action;
+    logic [7:0] reward;
+    logic [ADDR_WIDTH-1:0] addr_sa;
+    logic [ADDR_WIDTH-1:0] addr_next [0:ACTIONS-1];
+    logic [DATA_WIDTH-1:0] q_table_out [0:(ROWS*COLS*ACTIONS)-1];  // New output to observe q_table
 
-  // Clock and reset
-  logic clk, rst;
+    // Instantiate the q_learning_update module
+    q_learning_update #(
+        .ROWS(5),
+        .COLS(5),
+        .ACTIONS(4),
+        .ADDR_WIDTH(7),
+        .DATA_WIDTH(8)
+    ) dut (
+        .clk(clk),
+        .rst(rst),
+        .row(row),
+        .col(col),
+        .action(action),
+        .next_row(next_row),
+        .next_col(next_col),
+        .reward(reward),
+        .addr_sa(addr_sa),
+        .addr_next(addr_next),
+        .q_table_out(q_table_out)  // Connecting the output
+    );
 
-  // Inputs
-  logic [2:0] row, col, next_row, next_col;
-  logic [1:0] action;
-  logic [7:0] reward;
+    // Clock generation
+    always #5 clk = ~clk;
 
-  // Outputs
-  logic [ADDR_WIDTH-1:0] addr_sa;
-  logic [ADDR_WIDTH-1:0] addr_next [0:ACTIONS-1];
-  logic [DATA_WIDTH-1:0] q_table_out [0:QTABLE_SIZE-1];
+    // Stimulus block
+    initial begin
+        // Initialize the signals
+        clk = 0;
+        rst = 1;
+        row = 0;
+        col = 0;
+        action = 0;
+        next_row = 1;
+        next_col = 1;
+        reward = 10;
 
-  // Instantiate the DUT
-  q_learning_update #(
-    .ROWS(ROWS),
-    .COLS(COLS),
-    .ACTIONS(ACTIONS),
-    .ADDR_WIDTH(ADDR_WIDTH),
-    .DATA_WIDTH(DATA_WIDTH)
-  ) dut (
-    .clk(clk),
-    .rst(rst),
-    .row(row),
-    .col(col),
-    .action(action),
-    .next_row(next_row),
-    .next_col(next_col),
-    .reward(reward),
-    .addr_sa(addr_sa),
-    .addr_next(addr_next),
-    .q_table_out(q_table_out)
-  );
+        // Apply reset
+        #10 rst = 0;
+        #10 rst = 1;
+        #10 rst = 0;
 
-  // Clock generation
-  always #5 clk = ~clk;
+        // Apply stimulus
+        row = 1; col = 1; action = 2; next_row = 2; next_col = 2; reward = 5;
 
-  // Initial block
-  initial begin
-    $display("Starting Q-learning testbench...");
-    clk = 0;
-    rst = 1;
-    row = 3;
-    col = 2;
-    action = 1;
-    next_row = 3;
-    next_col = 3;
-    reward = 8'd10;
+        // Add more test cases as needed
 
-    #10 rst = 0;
+        // Monitor the q_table_out at each cycle
+        #10;
+        $display("q_table[0]: %h", q_table_out[0]);
+        $display("q_table[1]: %h", q_table_out[1]);
+        // Print more entries if needed
 
-    // Run for several cycles
-    repeat (20) begin
-      @(posedge clk);
+        // End the simulation
+        #100 $finish;
     end
-
-    // Display final Q-table values
-    $display("\nFinal Q-table:");
-    for (int i = 0; i < QTABLE_SIZE; i++) begin
-      $display("q_table[%0d] = %0d", i, q_table_out[i]);
-    end
-
-    $finish;
-  end
-
 endmodule
 

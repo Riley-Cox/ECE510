@@ -1,5 +1,3 @@
-// q_learning_update.sv
-
 module q_learning_update #(
     parameter ROWS = 5,
     parameter COLS = 5,
@@ -17,7 +15,7 @@ module q_learning_update #(
     input logic [7:0] reward,
     output logic [ADDR_WIDTH-1:0] addr_sa,
     output logic [ADDR_WIDTH-1:0] addr_next [0:ACTIONS-1],
-    output logic [DATA_WIDTH-1:0] q_table_out [0:(ROWS*COLS*ACTIONS)-1]  // Added for debug visibility
+    output logic [DATA_WIDTH-1:0] q_table_out [0:(ROWS*COLS*ACTIONS)-1]  // Expose the q_table
 );
 
     typedef logic [ADDR_WIDTH-1:0] addr_t;
@@ -37,6 +35,10 @@ module q_learning_update #(
     always_ff @(posedge clk or posedge rst) begin
         if (rst) begin
             state <= IDLE;
+            // Initialize q_table with zeros on reset
+            for (int i = 0; i < ROWS * COLS * ACTIONS; i++) begin
+                q_table[i] <= '0;
+            end
         end else begin
             case (state)
                 IDLE: begin
@@ -69,12 +71,8 @@ module q_learning_update #(
         end
     end
 
-    // Expose internal q_table for debugging
-    always_comb begin
-        for (int i = 0; i < ROWS*COLS*ACTIONS; i++) begin
-            q_table_out[i] = q_table[i];
-        end
-    end
+    // Expose the q_table for inspection in the testbench
+    assign q_table_out = q_table;
 
 endmodule
 
