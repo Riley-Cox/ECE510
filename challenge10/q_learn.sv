@@ -16,7 +16,8 @@ module q_learning_update #(
     input logic [2:0] next_col,
     input logic [7:0] reward,
     output logic [ADDR_WIDTH-1:0] addr_sa,
-    output logic [ADDR_WIDTH-1:0] addr_next [0:ACTIONS-1]
+    output logic [ADDR_WIDTH-1:0] addr_next [0:ACTIONS-1],
+    output logic [DATA_WIDTH-1:0] q_table_out [0:(ROWS*COLS*ACTIONS)-1]  // Added for debug visibility
 );
 
     typedef logic [ADDR_WIDTH-1:0] addr_t;
@@ -65,6 +66,13 @@ module q_learning_update #(
                     state <= IDLE;
                 end
             endcase
+        end
+    end
+
+    // Expose internal q_table for debugging
+    always_comb begin
+        for (int i = 0; i < ROWS*COLS*ACTIONS; i++) begin
+            q_table_out[i] = q_table[i];
         end
     end
 
