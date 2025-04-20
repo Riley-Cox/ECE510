@@ -21,6 +21,7 @@ module tb_q_learning_update;
     logic [2:0] next_col;
     logic [7:0] reward;
 
+
     // Outputs
     logic [ADDR_WIDTH-1:0] addr_sa;
     logic [ADDR_WIDTH-1:0] addr_next [0:ACTIONS-1];
@@ -66,6 +67,7 @@ module tb_q_learning_update;
         for (int i = 0; i < ROWS; i++) begin
             for (int j = 0; j < COLS; j++) begin
                 for (int a = 0; a < ACTIONS; a++) begin
+                repeat (1) @(negedge clk);
                     row = i;
                     col = j;
                     action = a;
@@ -77,19 +79,12 @@ module tb_q_learning_update;
                 end
             end
         end
-	print_q_table;
+dut.print_q_table();
         // Simulation end
         $display("Simulation completed.");
         $finish;
     end
     // Debug task to print Q-table
-    task print_q_table;
-        $display("\n--- Q-Table Contents ---");
-        for (int i = 0; i < ROWS * COLS * ACTIONS; i++) begin
-            $display("q_table[%0d] = %0d", i, q_table[i]);
-        end
-        $display("--- End Q-Table ---\n");
-    endtask
 
 endmodule
 

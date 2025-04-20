@@ -14,8 +14,7 @@ module q_learning_update #(
     input logic [2:0] next_col,
     input logic [7:0] reward,
     output logic [ADDR_WIDTH-1:0] addr_sa,
-    output logic [ADDR_WIDTH-1:0] addr_next [0:ACTIONS-1],
-    output logic [DATA_WIDTH-1:0] q_table_out [0:(ROWS*COLS*ACTIONS)-1]  // Expose the q_table
+    output logic [ADDR_WIDTH-1:0] addr_next [0:ACTIONS-1]
 );
 
     typedef logic [ADDR_WIDTH-1:0] addr_t;
@@ -38,6 +37,13 @@ module q_learning_update #(
             // Initialize q_table with zeros on reset
             for (int i = 0; i < ROWS * COLS * ACTIONS; i++) begin
                 q_table[i] <= '0;
+            end
+            q_sa <= '0;
+            max_q_next <= '0;
+            delta <= '0;
+            for (int i = 0; i < ACTIONS; i++) begin
+              addr_next[i] <= '0;
+              q_next[i] <= '0;
             end
         end else begin
             case (state)
@@ -71,8 +77,14 @@ module q_learning_update #(
         end
     end
 
-    // Expose the q_table for inspection in the testbench
-    assign q_table_out = q_table;
+
+    task print_q_table;
+        $display("\n--- Q-Table Contents ---");
+        for (int i = 0; i < ROWS * COLS * ACTIONS; i++) begin
+            $display("q_table[%0d] = %0d", i, q_table[i]);
+        end
+        $display("--- End Q-Table ---\n");
+    endtask
 
 endmodule
 
