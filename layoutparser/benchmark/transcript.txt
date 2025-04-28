@@ -1,0 +1,1096 @@
+
+--- Page 1 ---
+zejiang_shen, kaixuanzhang, melissadell}@fas.harvard.edu
+Complex layouts significantly complicate the automated
+digitization of historical documents, which contain a variety
+of rich information of interest to researchers and the pub-
+lic more generally. In particular, many documents of rel-
+evance to social science researchers and business analysts
+contain complex, heterogeneous tabular and column struc-
+tures, which off-the-shelf tools cannot recognize. More-
+over, unique layout patterns appear in different languages.
+For example, complex layouts with vertical text orienta-
+tion are common in _ sian languages. Complex layouts dis-
+rupt Optical Character Recognition (OCR) and result in text
+from different columns, rows, or text regions being incor-
+rectly garbled together, making automated digitization re-
+sults unusable.
+Figure 1: Examples of HJDataset document images and annotations. (a) to (d) show images of the four page categories.
+and (e) provides a simplified illustration of layout annotations for main pages. The seven types of hierarchically constructec
+layout elements are highlighted in different colors.
+1. Introduction
+Various algorithms [2, 3] have been proposed to analyze
+the layouts geometrically. They utilize visual properties like
+text spacing and gaps to correct skewness and segment con-
+tent regions with fine-tuned parameters. Recently, there has
+been an increased interest in adopting deep learning (DL)
+methods to build end-to-end layout understanding models.
+For example, Oliveira et al. [16] and Xu et al. [23] build
+models upon fully convolutional networks [13] to detect
+page frames and text lines with high accuracy.
+Deep learning-based approaches for automatic docu-
+ment layout analysis and content extraction have the po-
+tential to unlock rich information trapped in historical doc-
+uments on a large scale. One major hurdle is the lack
+of large datasets for training robust models. In particu-
+lar, little training data exist for sian languages. To this
+end, we present HJDataset, a Large Dataset of _ istorical
+Japanese Documents with Complex Layouts. It contains
+over 250,000 layout element annotations of seven types.
+In addition to bounding boxes and masks of the con-
+tent regions, it also includes the hierarchical structures
+and reading orders for layout elements. The dataset is
+constructed using a combination of human and machine
+efforts. semi-rule based method is developed to ex-
+tract the layout elements, and the results are checked by
+human inspectors. The resulting large-scale dataset is
+used to provide baseline performance analyses for text re-
+gion detection using state-of-the-art deep learning mod-
+els. nd we demonstrate the usefulness of the datasei
+on real-world document digitization tasks. The dataset is
+available at httpos://dell-research-harvarda.
+Large Dataset of Historical Japanese Documents with Complex Layouts
+bstract
+available at https://dell-—research-harvard
+github.io/HJ ataset/.
+(a) Advertisement Page
+ejiang Shen Kaixuan Zhang Melissa I
+Harvard University
+Zejiang Shen Kaixuan Zhang Melissa Del
+Large Dataset of Historical Japanese Documents with Complex Layou
+Zejiang Shen Kaixuan Zhang Melissa Dell
+
+Harvard TIlniverecty
+Zejiang Shen
+TAO8980 POOC:-ALXJe
+Zejiang Shen Kaixuan Zhang Melissa Dell
+
+LTarsard Tlrnixvarcitts
+Melissa Dell
+Various algorithms [2, 3] have been proposed to analyze
+the layouts geometrically. They utilize visual properties like
+text spacing and gaps to correct skewness and segment con-
+tent regions with fine-tuned parameters. Recently, there has
+been an increased interest in adopting deep learning (DL)
+methods to build end-to-end layout understanding models.
+For example, Oliveira et al. [16] and Xu et al. [23] build
+models upon fully convolutional networks [13] to detect
+page frames and text lines with high accuracy.
+Complex layouts significantly complicate the automated
+Deep learning-based approaches for automatic docu-
+ment layout analysis and content extraction have the po-
+tential to unlock rich information trapped in historical doc-
+uments on a large scale. One major hurdle is the lack
+of large datasets for training robust models. In particu-
+lar, little training data exist for sian languages. To this
+end, we present HJDataset, a Large Dataset of _ istorical
+Japanese Documents with Complex Layouts. It contains
+over 250,000 layout element annotations of seven types.
+In addition to bounding boxes and masks of the con-
+tent regions, it also includes the hierarchical structures
+and reading orders for layout elements. The dataset is
+constructed using a combination of human and machine
+efforts. semi-rule based method is developed to ex-
+tract the layout elements, and the results are checked by
+human inspectors. The resulting large-scale dataset is
+used to provide baseline performance analyses for text re-
+gion detection using state-of-the-art deep learning mod-
+els. | nd we demonstrate the usefulness of the dataset
+on real-world document digitization tasks. The dataset is
+available at https://dell-research-harvard.
+github.io/HJ ataset/.
+
+--- Page 2 ---
+Manual creation of such a dataset would be highly la-
+porious, prohibitively costly, and potentially quite noisy.
+Therefore, similar to PubLayNet [24], HJDataset is gener-
+ated in a near-automatic fashion. With the help of a care-
+fully designed semi-rule-based method, the layout elements
+are accurately extracted. To ensure label quality, possible
+2rrors are identified based on annotation statistics, and hu-
+man inspectors correct some minor errors accordingly.
+Central lO the SUCCESS OF VL MOdeIs are Many labeled
+samples for training and evaluating the neural networks.
+There have been long term efforts to develop layout anal-
+ysis datasets [1], and recently a very large-scale dataset has
+been developed for modern documents [24]. However, for
+historical documents, the existing datasets are small. For
+example, there are only 150 instances in the DIV -HisDB
+dataset [20] and 528 in the European Newspapers Project
+Dataset [5]. Because deep neural nets tend to overfit small
+datasets, models trained on them are less robust and perfor-
+mance evaluation is less reliable. Because older documents
+are subject to wearing, stains, and other noise that do not
+appear in modern documents, they require dedicated large
+datasets for training.
+To attack these problems, we present the HJDataset:
+a Large Dataset of Historical Japanese Documents with
+Complex Layouts. Currently, this dataset contains 2,271
+document image scans with various document informa-
+tion, from the Japanese Who’s Who biographical direc-
+tory published in 1953, which contains biographies for
+around 50,000 prominent Japanese citizens [10]. For each
+document image, HJDataset contains its content category
+(main, index, advertisement, or other). For the
+main and index pages, we create 25k layout region anno-
+tations of seven types at different levels (from page frames
+to individual text blocks). Besides the bounding box co-
+ordinates, we also include the dependency structures and
+reading orders for all the layout elements. The data are
+stored in the COCO format [12], which is commonly used
+in computer vision research. The resulting dataset provides
+a ground truth for different document image analysis tasks,
+from page classification to layout element detection. Exten-
+sive experiments have been conducted, and state-of-the-art
+models are trained and evaluated on this dataset.
+dditionally, most open-sourced historical document
+layout datasets are in western languages [1, 5, 4]. Models
+trained on them are not exposed to layout patterns that ap-
+pear commonly and exclusively in sian languages. sian
+language datasets will be required to build more generalized
+layout analysis models.
+3. Page Type Labeling
+ee IIE EEE INE IIE) ISI IER
+ing has revolutionized computer vision research, DL-based
+document image analysis methods are also being developed
+to tackle challenging tasks. [7] evaluates convolutional neu-
+ral networks for document image classification tasks, and
+[16] adapts the fully convolutional network (FCN) [13] to
+detect layout element objects inside the page. For more
+complicated tabular data, Schreiber et al. [19] adapt Faster
+R-CNN [17] and FCN to identify their structures and parse
+the contents. Behind their success, large datasets are re-
+quired to train and evaluate the models.
+2. Related Work
+ae NT OE OOS NE NR BO NAN BLOAT ODO
+datasets have been created in recent years [21]. For mod-
+ern documents, ntonacopoulos et al.’s work [1] is the first
+frequently-used dataset, with 305 images of magazines and
+technical articles available for download. The recent Pub-
+LayNet [24] dataset contains 360k samples from modern
+research publications. For historical documents, the work
+in [5] provides layout annotations for 600 historical Euro-
+pean newspaper images. The datasets in [20] and [6] are
+commonly used for medieval manuscripts and have 160 and
+2036 samples respectively. Historical layout datasets tend
+to be small and are largely unavailable for sian languages.
+Large-scale digital libraries, such as the millions of scans
+placed online by Japan’s National Diet Library, provide the
+raw inputs for creating large datasets for historical docu-
+ment layout analysis, but developing these datasets requires
+methods that do not rely on costly human labeling.
+Contents are organized very differently on pages of
+different purposes, and hence the first step of the lay-
+out analysis pipeline identifies the page type. We man-
+ually labeled the page types according to their purposes.
+* -s COCO format does not contain an image-level category fielc
+
+we add a new key for each image record called category id.
+Page Type Number of images Category ID *
+main 2048 8
+advertisement 87 9
+index 82 10
+other 54 11
+The contribution of this work is twofold. First, we build
+the HJDataset, the first large layout analysis dataset of his-
+torical Japanese documents to the best of our knowledge.
+
+semi-ruled-based method is designed for generating this
+Deep Learning for Layout na
+Layout nalysis Dataset
+Table 1: Page types and numbers included in HJDataset
+dataset can improve performance on other tasks with small
+amounts of labeled data. The dataset and pre-trained mod-
+els will be released online to support the development of
+Japanese and more general layout analysis algorithms.
+variety of layout analysis
+semi-ruled-based method 1s designed for generating th
+dataset. Second, we show that models pre-trained on ot
+Layout
+; deep learn-
+dataset can improve performance on other tasks with small
+amounts of labeled data. The dataset and pre-trained mod-
+els will be released online to support the development of
+Japanese and more general layout analysis algorithms.
+UICC Learns 10 LayOul MdlysiIs Ss GeCp ieadlii-
+ing has revolutionized computer vision research, DL-based
+document image analysis methods are also being developed
+to tackle challenging tasks. [7] evaluates convolutional neu-
+ral networks for document image classification tasks, and
+[16] adapts the fully convolutional network (FCN) [13] to
+detect layout element objects inside the page. For more
+complicated tabular data, Schreiber et al. [19] adapt Faster
+R-CNN [17] and FCN to identify their structures and parse
+the contents. Behind their success, large datasets are re-
+quired to train and evaluate the models.
+Layout nalysis Dataset variety of layout analysi:
+datasets have been created in recent years [21]. For mod
+ern documents, ntonacopoulos et al.’s work [1] is the firs
+frequently-used dataset, with 305 images of magazines anc
+technical articles available for download. The recent Pub
+LayNet [24] dataset contains 360k samples from moder!
+research publications. For historical documents, the worl
+in [5] provides layout annotations for 600 historical Euro
+pean newspaper images. The datasets in [20] and [6] ar
+commonly used for medieval manuscripts and have 160 anc
+2036 samples respectively. Historical layout datasets tenc
+to be small and are largely unavailable for sian languages
+Large-scale digital libraries, such as the millions of scan
+placed online by Japan’s National Diet Library, provide thé
+raw inputs for creating large datasets for historical docu
+ment layout analysis, but developing these datasets require
+methods that do not rely on costly human labeling.
+
+--- Page 3 ---
+S lilustrated in Figure 5.a, we first estimate the page
+frame box using contour detection. This method groups
+pixels with similar visual properties like color or intensity
+and can be used for extracting different regions [14]. In our
+case, the largest intensity contour in the input delineates
+the page boundary, and we estimate the four vertex coor-
+dinates 2x y)}*_ of the circumscribed quadrilateral for
+this contour as the page box. We convert the page image
+inside the quadrilateral to a rectangle based on a warp affine
+transformation.
+s shown in Figure 2, the contents in the main pages are
+organized in a hierarchical manner. Five rows are vertically
+stacked in a page, while text region and title region are hor-
+izontally arranged inside each row. The title region can be
+further broken down into title and subtitle blocks, and other
+irrelevant texts are labeled as the other type. The text region
+blocks contain only vertical text lines and read from right to
+left. Our objective is to segment the pages into units of sim-
+ple layouts, namely, text region, title, and subtitle blocks.
+Similar rules apply to the index pages.
+The Text Block Detector extracts the content boxes in the
+input scan in a hierarchical fashion. _ fter binarizing the
+color scans, the recognition is conducted on different reso-
+lutions to identify blocks of different scales. The algorithm
+downsamples the image with a 1/8 ratio when detecting the
+page frame and row boxes, while using the full resolutions
+for extracting regions in each row. To account for possible
+rotations and irregularities, we characterize the page frame
+boxes with quadrilaterals. The row, text region, and title
+region are represented with rectangles as the distortions are
+largely eliminated within the page frames.
+Based on the hierarchical structures, we design a multi-
+stage pipeline for robustly extracting the layout elements, il-
+lustrated in Figure 3. For the input page scan, the Text Block
+Detector first extracts the bounding boxes of page frame,
+row, text region, and title region sequentially, as explained
+in Section 4.1. | CNN is trained to predict the contextual
+labels for the extracted regions, and the block segmentation
+is refined accordingly (detailed in Section 4.2). _ fter that,
+we construct the reading orders based on Japanese read-
+ing rules, as described in Section 4.3. Finally, Section 4.4
+discusses measures to identify and correct possible errors
+4.1. Text Block Detector
+s shown in Figure |, four labels, le. main, index,
+advertisement, and other, have been created for the
+2k images. main pages present the detailed biographical
+nformation of around 50,000 Japanese business, political,
+and cultural leaders with complex structure, forming our
+orimary focus. Table | provides a detailed description of the
+classes and the number of samples contained in HJDataset.
+4. Document Layout nnotation
+Connected Component Labeling (CCL) [18] and Run
+Length Smoothing lgorithm (RLS) [15] are used for
+splitting the five rows of contents vertically inside the page
+frame. s weapply the RSL algorithm horizontally, each
+row is connected, and CCL can be applied to differentiate
+the rows. This approach is robust when the page is the end
+rigure 5: Lhe four stages in layout element annotation.
+Our method detects the coordinates of the page frames, row
+regions, and text blocks. _ text block classifier is then used
+to predict the block categories (indicated by the different
+colors in the figure), and the detections are refined accord-
+ingly. Reading orders and hierarchical dependency are gen-
+erated for all layout elements. Finally human annotators
+check the results and correct the errors.
+PIsure £4. AMC MiCrarCmiCar COMUCHE SUTUCTUTE Hi m if
+pages. Each page contains five rows that are vertically
+stacked, and the text regions are horizontally arranged
+within each row. Texts are vertically written inside the text
+region, e.g. (g) in the figure. The title region, e.g. (f), can
+be further split into title and subtitle blocks. _n other cate-
+gory is reserved for chapter headers and other irrelevant text
+regions.
+to ensure high quality of the generated annotations. T!
+dataset statistics are provided in Section 4.5.
+re 2: The hierarchical content structure in m in
+to ensure high quality of the generated annotations. The
+dataset statistics are provided in Section 4.5.
+> Tg. Quality Control and Human Annotation
+igure 3: The four stages in layout element annotation.
+to ensure high quality of the generated annotations. Th
+dataset statistics are provided in Section 4.5.
+Figure 2: Lhe Merarchical content structure nm in
+pages. Each page contains five rows that are vertically
+stacked, and the text regions are horizontally arranged
+within each row. Texts are vertically written inside the text
+region, e.g. (g) in the figure. The title region, e.g. (f), can
+be further split into title and subtitle blocks. _n other cate-
+gory is reserved for chapter headers and other irrelevant text
+regions.
+Figure 3: The four stages in layout element annotation.
+Our method detects the coordinates of the page frames, row
+regions, and text blocks. __ text block classifier is then used
+to predict the block categories (indicated by the different
+colors in the figure), and the detections are refined accord-
+ingly. Reading orders and hierarchical dependency are gen-
+erated for all layout elements. Finally human annotators
+check the results and correct the errors.
+s shown in Figure 1, four labels, i.e. main, index,
+Connected Component Labeling (CCL) [18] and Run
+Length Smoothing lgorithm (RLS) [15] are used for
+splitting the five rows of contents vertically inside the page
+frame. s weapply the RSL algorithm horizontally, each
+row is connected, and CCL can be applied to differentiate
+the rows. This approach is robust when the page is the end
+The Text Block Detector extracts the content boxes in the
+
+--- Page 4 ---
+We use the N SNet Mobile [25] architecture to build our
+CNN. It is a neural network generated via Neural _ rchi-
+tecture Search (N_ S) and achieves excellent performance
+over many benchmarks. Our classifier is trained on 1,200
+hand-labeled samples and tested on 100 samples. s mis-
+segmentation rarely appears (only 3 in 1000 samples), we
+re-balance the dataset distribution by manually creating 250
+mis-segmented images. The input images are rescaled to the
+same size of 200 height and 522 width. We train the model
+from scratch, without loading pre-trained weights. Using a
+stochastic gradient descent optimizer, the loss converges in
+40 epochs with a final test accuracy of 0.99.
+of a chapter, where there could be fewer than five rows, and
+the last row is not “full”. Similarly, for text and title regions
+in arow, we apply RLS _ vertically and split the connected
+components. Since the prediction is performed row-wise, it
+is impossible to connect text blocks in different rows, and
+the segmentation result is more robust. Rectangular bound-
+ing box coordinates x y w h) are generated for each
+row, text and title region, where x y ) is the coordinate
+for the top-left corner, and w and h are width and height for
+the rectangle, respectively.
+three-class CNN classifier is trained to identify the
+text, title, and wrongly-segmented regions. _ fter obtain-
+ing the region bounding box from Text Region Detector, we
+crop the page image based on the coordinates and predict its
+category. If it is classified as mis-segmented, a CCL-based
+method is applied to split it into text and title region. Title
+regions are further broken down into more refined title and
+subtitle segments, as illustrated in Figure 4.
+4.4. Quality Control and Human _nnotations
+This publication contains non-trivial reading orders
+which must also be deduced. The texts inside the basic ele-
+ments (text region, title, and subtitle) are written vertically,
+and read from right to left. dditionally, for text blocks in
+a row, they also follow a right-to-left order. Black arrows in
+Figure 4 shows the topological orders of different elements
+in arow. However, some different structures also exist. s
+indicated in Figure 5, section titles (shown in orange) dis-
+rupt the regular right-to-left order of texts (see rows 2 and
+3). s texts are usually densely arranged in each row, by
+searching the large gaps between blocks, we identify the
+discontinuity and correct the special reading order accord-
+ingly. We incorporate this irregularity in the dataset to in-
+clude the real-world noise and support the development of
+more general layout understanding models.
+Historical scans are challenging to analyze due to various
+noise. Despite the carefully engineered method described
+above, detection errors inevitably exist and need to be han-
+dled carefully. However, considering the sheer number of
+layout elements in this dataset, manual checking of all the
+predictions would be highly laborious and potentially noisy.
+To identify the small number of incorrect predictions
+without searching the whole dataset, we examine statistics
+about blocks and pages. _ s the main pages are densely
+printed, we find the number of layout elements remains con-
+sistent across pages, and blocks in a row are usually evenly
+spaced. Hence, by filtering layout elements that are sig-
+nificantly different in these statistics, we obtain a limited
+number of misdetection candidates. _ s the specificity (true
+negative rate) of the subsample is much higher, we can cor-
+rect the problems more efficiently.
+4.2. Text Region Classification and Refinement
+4.3. Reading Order Generation
+Text Block Detector finds the layout regions with high
+accuracy (details in Section 4.4). However, text and title
+regions are sometimes mis-segmented due to various noise
+Hence, Text Region Classifier is developed to identify lay-
+out categories and correct segmentation errors.
+Figure 4: Examples of the layout annotations and their
+reading order.
+Misdetected Page Frames When a page is not appropri-
+ately scanned, or it is physically broken, the page frame de-
+Figure 5: Irregular reading orders in the index pages.
+The section header in row 2 and 3 disrupts the reading order.
+Misdetected Page Frames When a page is not appropri-
+ately scanned, or it is physically broken, the page frame de-
+PULLS. diropite tli Vaivitiy VMS tierirY ALICUTHUUE UL oOL LIVE
+above, detection errors inevitably exist and need to be han-
+dled carefully. However, considering the sheer number of
+layout elements in this dataset, manual checking of all the
+predictions would be highly laborious and potentially noisy.
+
+To identify the small number of incorrect predictions
+without searching the whole dataset, we examine statistics
+about blocks and pages. _s the main pages are densely
+printed, we find the number of layout elements remains con-
+sistent across pages, and blocks in a row are usually evenly
+spaced. Hence, by filtering layout elements that are sig-
+
+rastanantix, Aiffarant in thaca atatictina ra nkhtoain +o limited
+TLUSlULT dl sUdalls dll CHdAllela lis LO dildly Ze GUL LU VallUous
+noise. Despite the carefully engineered method described
+above, detection errors inevitably exist and need to be han-
+dled carefully. However, considering the sheer number of
+layout elements in this dataset, manual checking of all the
+predictions would be highly laborious and potentially noisy.
+
+To identify the small number of incorrect predictions
+without searching the whole dataset, we examine statistics
+about blocks and pages. _ s the main pages are densely
+printed, we find the number of layout elements remains con-
+sistent across pages, and blocks in a row are usually evenly
+spaced. Hence, by filtering layout elements that are sig-
+nificantly different in these statistics, we obtain a limited
+number of misdetection candidates.  s the specificity (true
+negative rate) of the subsample is much higher, we can cor-
+rect the problems more efficiently.
+Figure 5: Irregular reading orders in the index pages.
+The section header in row 2 and 3 disrupts the reading order.
+Figure 4: Examples of the layout annotations and their
+reading order.
+
+--- Page 5 ---
+The three models are trained on all layout elements of
+main pages from the training set. For fair comparison, they
+are all being trained for 60k iterations, with a base 0.00025
+learning rate, and a decay rate of 0.1 for each 30k itera-
+tions. The batch size is 2, and the backbone CNN structure
+is R-50-— PN-3x (details in [22]), loaded with pre-trained
+weights from the COCO dataset. The training configuration
+will also be open-sourced for reproduciblility.
+Without considering the dependency between contents,
+layout analysis can be treated as detecting layout objects in-
+side each page. _s object detection has been extensively
+studied in current deep learning research, well-established
+models like Faster R-CNN [17], RetinaNet [11], and Mask
+R-CNN [8] have achieved excellent performance in various
+benchmarks [12]. Hence, we adopt these models and train
+them on our dataset. The implementation is based on Detec-
+tron2 [22], and the neural networks are trained on a single
+NVIDI RTX 2080Ti GPU.
+Table 3 shows the per-category bounding box prediction
+mean verage Precision(m P) for intersection, at intersec-
+aqiuonal Correcnion = rigure 6 SNOWS 1SSsues lke Cracks,
+stains, and holes that appear frequently and can disrupt the
+prediction pipeline. It is difficult to pre-screen all the mis-
+segmentation and incorrect predictions due to these irreg-
+ularities. Hence, during the manual checking process, hu-
+man annotators are asked to identify such errors and correct
+them. total of 111 layout elements have been found and
+corrected so far.
+5. Experiments
+In all, we fix more than 616 errors in total (since fix-
+ing page frames leads to more improvements), and 80% are
+identified by the statistical approach. We estimate that be-
+fore correction, there are around 1,560 blocks detected in-
+accurately.' _fter correcting the errors, the resultant dataset
+achieves 99.6% accuracy, and the remaining 0.4% errors
+can be neglected as random noise.
+examples of the annotations. Layout elements like text re-
+gion and other do not appear in the index pages, as we
+characterize the texts in index pages as title.
+We partition our dataset into training, validation, and
+testing subsets: 70% for training and 15% each for vali-
+dation and testing. The breakdown is stratified based on
+the page type to ensure the equal exposure of different page
+types in the three subsets. Because the characteristics of the
+pages vary, categories appear in different frequencies, and
+the dataset is unbalanced with respect to the object types.
+tection will become inaccurate, and it will disrupt the sub-
+sequent extraction of row and text regions. _ large increase
+or decrease in the number of layout elements in a page often
+implies a misdetection of the page frame. Therefore, we se-
+lect pages with more than 118 (95" percentile) or less than
+88 (5 percentile) layout elements and check them manu-
+ally. This selects 182 pages, and 18 (9.9%) errors are identi-
+fied. Their page frame coordinates are re-labeled manually.
+
+fter correction, we re-run the pipeline over the pages in
+4.5. Dataset Statistics and Partition
+In this section, we first report results from training state-
+of-the-art object detection models on the HJDataset. Perfor.
+mance is evaluated and provided as a benchmark. Second
+based on the pre-trained model, we study how HJDatase
+can assist other layout analysis tasks.
+5.1. Deep Learning Benchmark
+ViIssed Lext Lines) ine last text nes in a text region are
+sometimes missed if they contain only a few characters.
+This results in unusually large gaps between text blocks.
+This error can be easily identified by filtering the widths of
+the block gaps. We select 1,011 blocks with gaps larger than
+54 pixels (99" percentile), and correct 487 of them.
+‘We randomly choose 20 pages, and count the error rate. This process
+is repeated 3 times, and the average inaccuracy is 0.6%, which is equivalent
+to 1,560 out of 260k blocks.
+Iter correction, we re-run the pipeline over the pages 1
+order to detect other layout regions more accurately.
+Table 2: Layout element categories and numbers
+Category Training Validation Test Total
+Page Frame 1490 320 320 2130
+Row 7742 1657 1660 11059
+Title Region | 33637 7184 7271 ~=48092
+Text Region | 38034 8129 8207 = 54370
+Title 66515 14931 14366 95812
+Subtitle 33576 7173 7256 48005
+Other 103 16 29 148
+Total 181097 39410 39109 259616
+Figure 6: Various noises in the page scans.
+total Of 259,610 layout elements of seven categories
+have been extracted, as detailed in Table 2. Figure 7 shows
+dditional Correction Figure 6 shows issues like cracks,
+total of 259,616 layout elements of seven categories
+have been extracted, as detailed in Table 2. Figure 7 shows
+Missed Text Lines The last text lines in a text region are
+dditional Correction |
+Missed Text Lines
+total of 259,616 layout elements of seven categories
+have been extracted, as detailed in Table 2. Figure 7 shows
+tOldl OL 2I7,010 layout CICMeNts OL seven CalCSONes
+have been extracted, as detailed in Table 2. Figure 7 shows
+
+'We randomly choose 20 pages, and count the error rate. This process
+is repeated 3 times, and the average inaccuracy is 0.6%, which is equivalent
+to 1,560 out of 260k blocks.
+Figure 6: Various noises in the page scans.
+tection will become inaccurate, and it will disrupt the sub-
+sequent extraction of row and text regions. _ large increase
+or decrease in the number of layout elements in a page often
+implies a misdetection of the page frame. Therefore, we se-
+lect pages with more than 118 (95" percentile) or less than
+88 (5 percentile) layout elements and check them manu-
+ally. This selects 182 pages, and 18 (9.9%) errors are identi-
+fied. Their page frame coordinates are re-labeled manually.
+
+fter correction, we re-run the pipeline over the pages in
+order to detect other layout regions more accurately.
+Table 2: Layout element categories and numbers
+| LOLUA?L IATIVY JIFLUF 2I7FVIOD
+
+examples of the annotations. Layout elements like text re-
+gion and other do not appear in the index pages, as we
+characterize the texts in index pages as title.
+
+We partition our dataset into training, validation, and
+testing subsets: 70% for training and 15% each for vali-
+dation and testing. The breakdown is stratified based on
+the page type to ensure the equal exposure of different page
+types in the three subsets. Because the characteristics of the
+pages vary, categories appear in different frequencies, and
+the dataset is unbalanced with respect to the object types.
+5.1. Deep Learning Benchmark
+
+Without considering the dependency between contents,
+layout analysis can be treated as detecting layout objects in-
+side each page. __s object detection has been extensively
+studied in current deep learning research, well-established
+models like Faster R-CNN [17], RetinaNet [11], and Mask
+R-CNN [8] have achieved excellent performance in various
+benchmarks [12]. Hence, we adopt these models and train
+them on our dataset. The implementation is based on Detec-
+tron2 [22], and the neural networks are trained on a single
+NVIDI RTX 2080Ti GPU.
+
+Tha thraan moadale ara trained nn all latunrnnt alamantec nf
+
+--- Page 6 ---
+" For training Mask R-CNN, the segmentation masks are the quadri-
+lateral regions for each block. Compared to the rectangular bounding
+boxes, they delineate the text region more accurately.
+We also examine how our dataset can help with a real-
+world document digitization application. When digitizing
+new publications, researchers usually do not generate large
+scale ground truth data to train their layout analysis models.
+If they are able to adapt our dataset, or models trained on
+our dataset, to develop models on their data, they can build
+their pipelines more efficiently and develop more accurate
+models. To this end, we conduct two experiments. First we
+examine how layout analysis models trained on the main
+pages can be used for understanding index pages. More-
+over, we Study how the pre-trained models perform on other
+historical Japanese documents.
+all the training data can be viewed as the benchmarks, while
+training with few samples (five in this case) are consid-
+ered to mimic real-world scenarios. Given different train-
+ing data, models pre-trained on HJDataset perform signifi-
+cantly better than those initialized with COCO weights. In-
+tuitively, models trained on more data perform better than
+those with fewer samples. We also directly use the model
+trained on main to predict index pages without fine-
+tuning. The low zero-shot prediction accuracy indicates the
+dissimilarity between index and main pages. The large
+increase in m P from 0.344 to 0.471 after the model is
+tion over union (IOU) level [0.50:0.95]’, on the test data. In
+general, the high m_ P values indicate accurate detection of
+the layout elements. The Faster R-CNN and Mask R-CNN
+achieve comparable results, better than RetinaNet. Notice-
+ably, the detections for small blocks like title are less pre-
+cise, and the accuracy drops sharply for the title category. In
+Figure 8, (a) and (b) illustrate the accurate prediction results
+of the Faster R-CNN model.
+Table 4 compares the performance of five Faster R-CNN
+models that are trained differently on index pages. If the
+model loads pre-trained weights from HJDataset, it includes
+information learned from main pages. Models trained over
+Figure 7: nnotation Examples in HJDataset. (a) and (b) show two examples for the labeling of main pages. The boxes
+are colored differently to reflect the layout element categories. Illustrated in (c), the items in each index page row are
+categorized as title blocks, and the annotations are denser.
+5.2. Pre-training for other datasets
+“This is a core metric developed for the COCO competition [12] for
+-valuating the object detection quality.
+Category Faster R-CNN Mask R-CNN* RetinaNet
+Page Frame 99.046 99.097 99.038
+Row 98.831 98.482 95.067
+Title Region 87.571 89.483 69.593
+Text Region 94.463 86.798 89.531
+Title 65.908 71.517 72.566
+Subtitle 84.093 84.174 85.865
+Other 44.023 39.849 14.371
+m P 81.991 81.343 75.223
+Table 3: Detection m P @ IOU [0.50:0.95] of different
+models for each category on the test set. 11 values are given
+as percentages.
+(a) Main Page Annotation Example 1
+Table 3: Detection m P @ IOU [0.50:0.95] of different
+models for each category on the test set. II values are given
+
+AAO nrarnantanroacn
+(a) Main Page Annotation Example :
+We also examine how our dataset can help with a real-
+world document digitization application. When digitizing
+new publications, researchers usually do not generate large
+scale ground truth data to train their layout analysis models.
+If they are able to adapt our dataset, or models trained on
+our dataset, to develop models on their data, they can build
+their pipelines more efficiently and develop more accurate
+models. To this end, we conduct two experiments. First we
+examine how layout analysis models trained on the main
+pages can be used for understanding index pages. More-
+over, we study how the pre-trained models perform on other
+historical Japanese documents.
+
+Table 4 compares the performance of five Faster R-CNN
+models that are trained differently on index pages. If the
+are colored differently to reflect the layout element categories. Illustrated in (c),
+categorized as title blocks, and the annotations are denser.
+
+--- Page 7 ---
+“Il indicates the model is trained on all 57 training index samples,
+
+few-shot refers to model trained on 5 random samples, and zero-shot
+means the model directly use the weights without training.
+Figure 6: Lhe prediction results of Faster K-CNN on Main pages In HJ Dataset and another publication. (a) shows that
+the Faster R-CNN model is robust to noise like cracks and can detect most of the layout elements accurately. (b) highlights
+some minor errors in the Faster R-CNN predictions like inaccurate row blocks, e.g. (1), and missed text and title regions, e.g.
+(2) and (3). (c) shows the results of few-shot trained Faster R-CNN on another publication. They are generally correct. We
+label the new publication differently to increase the difficulty for training, and the red boxes in the image denote a special
+information region.
+6. Conclusion
+To evaluate our models on other historical Japanese doc-
+uments, we manually annotate 12 pages from another pub-
+lication with different layouts, the Japanese Whos Who bi-
+ographical directory published in 1939 [9], and we train the
+models on 4 samples. Performance is assessed on the re-
+maining 8 samples, as reported in Table 5. Similar to the
+Table 4: Comparison of the test set P of Faster R-CNN
+models trained differently on index pages. Il values are
+given as percentages.
+In this paper, we introduce the HJDataset, a large layout
+analysis dataset for historical Japanese documents. With a
+combination of semi-rule-based segmentation and statisti-
+cal error identification and correction, 260k layout annota-
+tions of seven categories are extracted from 2.2k page scans.
+Page type labels, block dependency, and reading orders are
+also included. Stored in COCO format, HJDataset allows
+Table 5: Comparison of the test set P of Faster R-CND
+models trained differently on another publication. II val
+ues are given as percentages.
+trained on five samples shows that the model can be quickly
+adapted to similar tasks. s the Ps 9 and P 5 ( P cal-
+culated with IOU=0.50 and 0.75) are higher than m_ P, we
+conclude that the models can learn to detect the general po-
+sition of layout objects.
+previous experiment, pre-training on HJDataset has a large
+positive influence on the detection accuracy given few train-
+ing samples. nd shown in Figure 8 (c), the layout elements
+are detected accurately. In summary, these two experiments
+demonstrate the usefulness of our dataset for other layout
+analysis tasks.
+Initialization | Training Data | m P Ps P35
+COCO i 34.408 53.342 37.533
+COCO Few-shot 9.988 18.572 9.669
+HJDataset ll 47.125 67.502 54.410
+HJDataset Few-shot 10.275 21.353 = 10.423
+HJDataset Zero-shot 9.411 44.299 0.068
+Initialization | Training Data | m P Ps P75
+
+COCO Few-shot 69.925 95.119 78.667
+HJDataset Few-shot 81.638 98.364 88.203
+HJDataset Zero-shot 38.959 50.971 42.269
+(a) Accurately Detected Main Pags
+‘igure 8: The prediction results of Faster R-CNN on Main pages in HJDataset and another publication. (a) shows that
+(c) Detection Results on Another Publicatio1
+with Few-shot Training
+igure 8: The prediction results of Faster R-CNN on Main pages in HJDataset and another publication. (a) shows thé
+m Title Region Special Information Regio!
+(a) Accurately Detected Main Pag
+»gion Special Information Regior
+previous experiment, pre-training on HJDataset has a large
+positive influence on the detection accuracy given few train-
+ing samples. nd shown in Figure 8 (c), the layout elements
+are detected accurately. In summary, these two experiments
+demonstrate the usefulness of our dataset for other layout
+analysis tasks.
+
+--- Page 8 ---
+[1] postolos ntonacopoulos, David Bridson, Christos Pa-
+padopoulos, and Stefan Pletschacher. realistic dataset for
+performance evaluation of document layout analysis. In 2009
+10th International Conference on Document nalysis and
+Recognition, pages 296-300. IEEE, 2009.
+
+[2] Thomas M Breuel. High performance document layout anal-
+ysis. In Proceedings of the Symposium on Document Image
+Understanding Technology, pages 209-218, 2003.
+
+[3] Roldano Cattoni, Tarcisio Coianiz, Stefano Messelodi, and
+Carla Maria Modena. Geometric layout analysis techniques
+for document image understanding: a review. ITC-irst Tech-
+nical Report, 9703(09), 1998.
+
+[4] Christian Clausner, postolos ntonacopoulos, and Stefan
+Pletschacher. ICD R2019 competition on recognition of
+documents with complex layouts-rdcl2019. In 2019 Inter-
+national Conference on Document nalysis and Recognition
+(ICD _ R), pages 1521-1526. LEEE, 2019.
+
+[5] Christian Clausner, Christos Papadopoulos, Stefan
+Pletschacher, and postolos  ntonacopoulos. The ENP
+image and ground truth dataset of historical newspapers. In
+2015 13th International Conference on Document _ nalysis
+and Recognition (ICD R), pages 931-935. IEEE, 2015.
+
+[6] Tobias Griining, Roger Labahn, Markus Diem, Florian Kle-
+ber, and Stefan Fiel. Read-bad: new dataset and evalua-
+tion scheme for baseline detection in archival documents. In
+2018 13thI PR International Workshop on Document _ nal-
+ysis Systems (DS), pages 351-356. IEEE, 2018.
+
+[7] dam W Harley, lex Ufkes, and Konstantinos G Derpanis.
+Evaluation of deep convolutional nets for document image
+classification and retrieval. In 2015 13th International Con-
+ference on Document nalysis and Recognition (ICD R),
+pages 991-995. IEEE, 2015.
+
+[8] Kaiming He, Georgia Gkioxari, Piotr Dollar, and Ross Gir-
+shick. Mask R-CNN. In Proceedings of the [EEE inter-
+national conference on computer vision, pages 2961-2969,
+2017.
+
+[9] Jinji Kshinjo. Jinji kshinroku, volume 11, 1939.
+
+[10] Jinji Kshinjo. Jinji kshinroku, volume 17, 1953.
+
+r4141m™_.... a ee ee ee ee |
+[14]
+
+[15]
+
+[16]
+
+[17]
+
+[18]
+
+[19]
+
+[20]
+
+[21]
+
+[22]
+
+[23]
+
+[24]
+
+[25]
+
+baal baal
+
+convolutional networks for semantic segmentation. In Pro-
+ceedings of the IEEE conference on computer vision and pat:
+tern recognition, pages 3431-3440, 2015.
+Michael Randolph Maire. Contour detection and image seg-
+mentation. Citeseer, 2009.
+Nikos Nikolaou, Michael Makridis, Basilis Gatos, Niko-
+laos Stamatopoulos, and Nikos Papamarkos. Segmentation
+of historical machine-printed documents using adaptive run
+length smoothing and skeleton segmentation paths. Image
+and Vision Computing, 28(4):590-604, 2010.
+Sofia res Oliveira, Benoit Seguin, and Frederic Kaplan.
+dhSegment: generic deep-learning approach for document
+segmentation. In 2018 16th International Conference or
+Frontiers in Handwriting Recognition (ICFHR), pages 7-12.
+IEEE, 2018.
+Shaoqing Ren, Kaiming He, Ross Girshick, and Jian Sun.
+Faster R-CNN: Towards real-time object detection with re-
+gion proposal networks. In dvances in neural information
+processing systems, pages 91-99, 2015.
+Hanan Samet and Markku Tamminen. Efficient component
+labeling of images of arbitrary dimension represented by lin-
+ear bintrees. JEEE transactions on pattern analysis and ma-
+chine intelligence, 10(4):579-586, 1988.
+Sebastian Schreiber, Stefan gne, Ivo Wolf, ndreas Den-
+gel, and Sheraz hmed. DeepDeSRT: Deep learning for de-
+tection and structure recognition of tables in document im-
+ages. In 2017 14th I PR International Conference on Doc-
+ument nalysis and Recognition (ICD R), volume 1, pages
+1162-1167. IEEE, 2017.
+Foteini Simistira, Mathias Seuret, Nicole Eichenberger, _ n-
+gelika Garz, Marcus Liwicki, and Rolf Ingold. Diva-hisdb:
+precisely annotated large dataset of challenging medieval
+manuscripts. In 20/6 I5th International Conference or
+Frontiers in Handwriting Recognition (ICFHR), pages 471-
+476. IEEE, 2016.
+Ernest Valveny. Datasets and nnotations for Documen
+nalysis and Recognition, pages 983-1009. Springer Lon-
+don, London, 2014.
+Yuxin Wu, lexander Kirillov, Francisco Massa, Wan- Yer
+Lo, and Ross Girshick. Detectron2. https://github.
+com/facebookresearch/detectron2, 2019.
+Yue Xu, Fei Yin, Zhaoxiang Zhang, and Cheng-Lin Liu.
+Multi-task layout analysis for historical handwritten docu-
+ments using fully convolutional networks. In Proceedings oj
+the Twenty-Seventh International Joint Conference on _ rtifi-
+cial Intelligence, IJC I-18, pages 1057-1063. Internationa!
+Joint Conferences on _ rtificial Intelligence Organization, 7
+2018.
+Xu Zhong, Jianbin Tang, and ntonio Jimeno Yepes. Pub-
+laynet: largest dataset ever for document layout analysis.
+arXiv preprint arXiv: 1908.07836, 2019.
+Barret Zoph, Vijay Vasudevan, Jonathon Shlens, and Quoc V
+Le. Learning transferable architectures for scalable image
+recognition. In Proceedings of the IEEE conference or
+computer vision and pattern recognition, pages 8697-8710.
+2018.
+2]
+
+Piotr Dollar. Focal loss for dense object detection. In Pro-
+ceedings of the IEEE international conference on computer
+vision, pages 2980-2988, 2017.
+
+Tsung-Yi Lin, Michael Maire, Serge Belongie, James Hays,
+Pietro Perona, Deva Ramanan, Piotr Dollér, and C Lawrence
+Zitnick. Microsoft COCO: Common objects in context. In
+European conference on computer vision, pages 740-755.
+Springer, 2014.
+state-of-the-art object detection models to be easily trained
+and evaluated. Moreover, we show that deep learning mod-
+els trained on HJDataset can be adapted to other datasets,
+facilitating real-world document digitization tasks.
+References
+cknowledgement. This project is supported in part by
+NSF Grant #1823616.
+[13] Jonathan Long, Evan Shelhamer, and Trevor Darrell. Fully
+convolutional networks for semantic segmentation. In Pro-
+ceedings of the IEEE conference on computer vision and pat-
+[7]
+
+[8]
+
+[9]
+[10]
+[11]
+
+[12]
+
+tion scheme for baseline detection in archival documents. In
+2018 13thI PR International Workshop on Document _ nal-
+ysis Systems (DS), pages 351-356. IEEE, 2018.
+
+dam W Harley, lex Ufkes, and Konstantinos G Derpanis.
+Evaluation of deep convolutional nets for document image
+classification and retrieval. In 2015 13th International Con-
+ference on Document nalysis and Recognition (ICD R),
+pages 991-995. IEEE, 2015.
+Kaiming He, Georgia Gkioxari, Piotr Dollar, and Ross Gir-
+shick. Mask R-CNN. In Proceedings of the [EEE inter-
+national conference on computer vision, pages 2961-2969,
+2017.
+Jinji Kshinjo. Jinji kshinroku, volume 11, 1939.
+Jinji Kshinjo. Jinji kshinroku, volume 17, 1953.
+Tsung- Yi Lin, Priya Goyal, Ross Girshick, Kaiming He, and
+Piotr Dollar. Focal loss for dense object detection. In Pro-
+ceedings of the IEEE international conference on computer
+vision, pages 2980-2988, 2017.
+Tsung-Yi Lin, Michael Maire, Serge Belongie, James Hays,
+Pietro Perona, Deva Ramanan, Piotr Dollar, and C Lawrence
+Zitnick. Microsoft COCO: Common objects in context. In
+European conference on computer vision, pages 740-755.
+Springer, 2014.
+Li~d
+
+[14]
+
+[15]
+
+[16]
+
+[17]
+
+[18]
+
+[19]
+
+NDE ONDA OID BANDED AN BB NALIN ELL ODDIE OBNI BBN NE BANDEN RR RMD
+convolutional networks for semantic segmentation. In Pro-
+ceedings of the IEEE conference on computer vision and pat-
+tern recognition, pages 3431-3440, 2015.
+
+Michael Randolph Maire. Contour detection and image seg-
+mentation. Citeseer, 2009.
+
+Nikos Nikolaou, Michael Makridis, Basilis Gatos, Niko-
+laos Stamatopoulos, and Nikos Papamarkos. Segmentation
+of historical machine-printed documents using adaptive run
+length smoothing and skeleton segmentation paths. Image
+and Vision Computing, 28(4):590-604, 2010.
+
+Sofia res Oliveira, Benoit Seguin, and Frederic Kaplan.
+dhSegment: generic deep-learning approach for document
+segmentation. In 2018 16th International Conference on
+Frontiers in Handwriting Recognition (ICFHR), pages 7-12.
+IEEE, 2018.
+
+Shaoqing Ren, Kaiming He, Ross Girshick, and Jian Sun.
+Faster R-CNN: Towards real-time object detection with re-
+gion proposal networks. In dvances in neural information
+processing systems, pages 91-99, 2015.
+
+Hanan Samet and Markku Tamminen. Efficient component
+labeling of images of arbitrary dimension represented by lin-
+ear bintrees. JEEE transactions on pattern analysis and ma-
+chine intelligence, 10(4):579-586, 1988.
+
+Sebastian Schreiber, Stefan gne, Ivo Wolf, ndreas Den-
+gel, and Sheraz hmed. DeepDeSRT: Deep learning for de-
+
+tantiann and ate ntien en nnnanitinn nf tahkhlan sn AHnanmar, t saan
+{13] Jonathan Long, Evan Shelhamer, and Trevor Darrell. Fully
+convolutional networks for semantic segmentation. In Pro-
+ceedings of the IEEE conference on computer vision and pat-
+References
+cknowledgement. This project is supported in part by
+NSF Grant #1823616.
+[9] Jinji Kshinjo. Jinji kshinroku, volume 11, 1939.
+({10] Jinji Kshinjo. Jinji kshinroku, volume 17, 1953.
+[11] Tsung-Yi Lin, Priya Goyal, Ross Girshick, Kain
+Low
+
+[21]
+
+[22]
+
+[23]
+
+[24]
+
+[25]
+
+EULCIIT OIIISUL A, IVEAUITAS OUULEL, LNINUIC LACMUMULI Eel, iim
+gelika Garz, Marcus Liwicki, and Rolf Ingold. Diva-hisdb:
+precisely annotated large dataset of challenging medieval
+manuscripts. In 2016 15th International Conference on
+Frontiers in Handwriting Recognition (ICFHR), pages 471-
+476. IEEE, 2016.
+Ernest Valveny. Datasets and nnotations for Document
+nalysis and Recognition, pages 983-1009. Springer Lon-
+don, London, 2014.
+Yuxin Wu, lexander Kirillov, Francisco Massa, Wan-Yen
+Lo, and Ross Girshick. Detectron2. https://github.
+com/facebookresearch/detectron2, 2019.
+Yue Xu, Fei Yin, Zhaoxiang Zhang, and Cheng-Lin Liu.
+Multi-task layout analysis for historical handwritten docu-
+ments using fully convolutional networks. In Proceedings oj
+the Twenty-Seventh International Joint Conference on rtifi-
+cial Intelligence, IJC I-18, pages 1057-1063. International
+Joint Conferences on _ rtificial Intelligence Organization, 7
+2018.
+Xu Zhong, Jianbin Tang, and ntonio Jimeno Yepes. Pub-
+laynet: largest dataset ever for document layout analysis.
+arXiv preprint arXiv: 1908.07836, 2019.
+Barret Zoph, Vijay Vasudevan, Jonathon Shlens, and Quoc V
+Le. Learning transferable architectures for scalable image
+recognition. In Proceedings of the IEEE conference on
+computer vision and pattern recognition, pages 8697-8710,
+2018.
+NSF Grant #1823616
+Tsung-Yi Lin, Priya Goyal, Ross Girshick, Kaiming He, and
+Piotr Dollar. Focal loss for dense object detection. In Pro-
+ceedings of the IEEE international conference on computei
+vision, pages 2980-2988, 2017.
+state-of-the-art object detection models to be easily train
+and evaluated. Moreover, we show that deep learning mo
+els trained on HJDataset can be adapted to other datase
+facilitating real-world document digitization tasks.
+[9] Jinji Kshinjo. Jinji kshinroku, volume 11, 1939.
+({10] Jinji Kshinjo. Jinji kshinroku, volume 17, 1953.
+[11] Tsung-Yi Lin, Priya Goyal, Ross Girshick, Kain
+1g- Yi Lin, Priya Goyal, Ross Girshick, Kaiming He, anc
+r Dollar. Focal loss for dense object detection. In Pro
+lings of the IEEE international conference on compute
+state-of-the-art object detection models to be easily trained
+and evaluated. Moreover, we show that deep learning mod-
+els trained on HJDataset can be adapted to other datasets,
+facilitating real-world document digitization tasks.
+2]
+
+Piotr Dollar. Focal loss for dense object detection. In Pro-
+ceedings of the IEEE international conference on computei
+vision, pages 2980-2988, 2017.
+
+Tsung-Yi Lin, Michael Maire, Serge Belongie, James Hays.
+Pietro Perona, Deva Ramanan, Piotr Dollar, and C Lawrence
+Zitnick. Microsoft COCO: Common objects in context. In
+European conference on computer vision, pages 740-755.
+Springer, 2014.
+[6]
+
+[7]
+
+[8]
+
+[9]
+
+2015 13th International Conference on Document _ nalysis
+and Recognition (ICD R), pages 931-935. IEEE, 2015.
+Tobias Griining, Roger Labahn, Markus Diem, Florian Kle-
+ber, and Stefan Fiel. Read-bad: new dataset and evalua-
+tion scheme for baseline detection in archival documents. In
+2018 13thI PR International Workshop on Document _ nal-
+ysis Systems (DS), pages 351-356. IEEE, 2018.
+
+dam W Harley, lex Ufkes, and Konstantinos G Derpanis.
+Evaluation of deep convolutional nets for document image
+classification and retrieval. In 2015 13th International Con-
+ference on Document nalysis and Recognition (ICD R).
+pages 991-995. IEEE, 2015.
+Kaiming He, Georgia Gkioxari, Piotr Dollar, and Ross Gir-
+shick. Mask R-CNN. In Proceedings of the [EEE inter-
+national conference on computer vision, pages 2961-2969.
+2017.
+Jinji Kshinjo. Jinji kshinroku, volume 11, 1939.
