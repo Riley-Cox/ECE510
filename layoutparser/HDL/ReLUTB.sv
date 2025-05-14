@@ -39,9 +39,9 @@ module top;
         data_in[2][0] = 7;  data_in[2][1] = 8;  data_in[2][2] = 9;
 
         // Kernel
-        kernel[0][0] = -1; kernel[0][1] = 0; kernel[0][2] = 1;
-        kernel[1][0] = -1; kernel[1][1] = 0; kernel[1][2] = 1;
-        kernel[2][0] = -1; kernel[2][1] = 0; kernel[2][2] = 1;
+        kernel[0][0] = 1; kernel[0][1] = 0; kernel[0][2] = -1;
+        kernel[1][0] = 1; kernel[1][1] = 0; kernel[1][2] = -1;
+        kernel[2][0] = 1; kernel[2][1] = 0; kernel[2][2] = -1;
 
         bias = 0;
 
