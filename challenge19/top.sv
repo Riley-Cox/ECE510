@@ -15,14 +15,14 @@ module top;
     logic [31:0] test1[]       = '{1, 1, 0, 1};
     logic [31:0] expected1[]   = '{0, 0, 0, 0};
 
-    logic [31:0] test2[]       = '{1, 1, 1, 1};
-    logic [31:0] expected2[]   = '{0, 0, 0, 1};
+    logic [31:0] test2[]       = '{1, 1, 1, 1, 1};
+    logic [31:0] expected2[]   = '{0, 0, 0, 0, 1};
 
     logic [31:0] test3[]       = '{1, 1, 1, 0, 0, 0};
     logic [31:0] expected3[]   = '{0, 0, 0, 0, 0, 0};
 
-    logic [31:0] test4[]       = '{1, 1, 1, 1, 1, 1, 1, 1};
-    logic [31:0] expected4[]   = '{0, 0, 0, 1, 0, 0, 0, 1};
+    logic [31:0] test4[]       = '{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+    logic [31:0] expected4[]   = '{0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
 
     // Instantiate DUT
     binary_lif_neuron #(
