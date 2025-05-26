@@ -1,42 +1,51 @@
 module binary_lif_neuron #(
-    parameter integer THRESHOLD = 5,
-    parameter integer LEAK = 1,
-    parameter integer MAX_MEM = 15  // Optional saturation
+    parameter int THRESHOLD = 4,
+    parameter int LEAK = 1,
+    parameter int MAX_MEM = 15
 )(
-    input logic clk,
-    input logic rst,
-    input logic in,               // Binary spike input (0 or 1)
-    output logic spike_out        // Binary output spike
+    input  logic clk,
+    input  logic rst,
+    input  logic in,
+    output logic spike_out
 );
 
     logic [$clog2(MAX_MEM+1)-1:0] membrane_potential;
+    logic [$clog2(MAX_MEM+1)-1:0] next_potential;
+    logic next_spike;
 
+    // Combinational logic: compute next potential and spike
+    always_comb begin
+        next_potential = membrane_potential;
+
+        // Leak
+        if (next_potential >= LEAK)
+            next_potential -= LEAK;
+        else
+            next_potential = 0;
+
+        // Integrate input
+        if (in)
+            next_potential += 1;
+
+        // Clamp
+        if (next_potential > MAX_MEM)
+            next_potential = MAX_MEM;
+
+        // Spike check
+        next_spike = (next_potential >= THRESHOLD);
+    end
+
+    // Sequential logic: register state and output
     always_ff @(posedge clk or posedge rst) begin
         if (rst) begin
             membrane_potential <= 0;
             spike_out <= 0;
         end else begin
-            // Leak first
-            if (membrane_potential >= LEAK)
-                membrane_potential <= membrane_potential - LEAK;
-            else
+            spike_out <= next_spike;
+            if (next_spike)
                 membrane_potential <= 0;
-
-            // Integrate input
-            if (in)
-                membrane_potential <= membrane_potential + 1;
-
-            // Cap membrane potential to avoid overflow
-            if (membrane_potential > MAX_MEM)
-                membrane_potential <= MAX_MEM;
-
-            // Check for spike
-            if (membrane_potential >= THRESHOLD) begin
-                spike_out <= 1;
-                membrane_potential <= 0;  // Reset after firing
-            end else begin
-                spike_out <= 0;
-            end
+            else
+                membrane_potential <= next_potential;
         end
     end
 
