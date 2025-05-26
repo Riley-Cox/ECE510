@@ -1,51 +1,30 @@
-module binary_lif_neuron #(
-    parameter int THRESHOLD = 4,
-    parameter int LEAK = 1,
-    parameter int MAX_MEM = 15
+module lif_neuron #(
+    parameter THRESHOLD = 8,
+    parameter LEAK = 1,
+    parameter MAX_POTENTIAL = 15
 )(
-    input  logic clk,
-    input  logic rst,
-    input  logic in,
-    output logic spike_out
+    input logic clk,
+    input logic rst,
+    input logic [3:0] input_current,
+    output logic spike,
+    output logic [3:0] potential
 );
 
-    logic [$clog2(MAX_MEM+1)-1:0] membrane_potential;
-    logic [$clog2(MAX_MEM+1)-1:0] next_potential;
-    logic next_spike;
-
-    // Combinational logic: compute next potential and spike
-    always_comb begin
-        next_potential = membrane_potential;
-
-        // Leak
-        if (next_potential >= LEAK)
-            next_potential -= LEAK;
-        else
-            next_potential = 0;
-
-        // Integrate input
-        if (in)
-            next_potential += 1;
-
-        // Clamp
-        if (next_potential > MAX_MEM)
-            next_potential = MAX_MEM;
-
-        // Spike check
-        next_spike = (next_potential >= THRESHOLD);
-    end
-
-    // Sequential logic: register state and output
     always_ff @(posedge clk or posedge rst) begin
         if (rst) begin
-            membrane_potential <= 0;
-            spike_out <= 0;
+            potential <= 0;
+            spike <= 0;
         end else begin
-            spike_out <= next_spike;
-            if (next_spike)
-                membrane_potential <= 0;
-            else
-                membrane_potential <= next_potential;
+            if (potential + input_current >= THRESHOLD) begin
+                spike <= 1;
+                potential <= 0;
+            end else begin
+                spike <= 0;
+                if (potential + input_current >= LEAK)
+                    potential <= potential + input_current - LEAK;
+                else
+                    potential <= 0;
+            end
         end
     end
 
