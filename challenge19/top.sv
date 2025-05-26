@@ -1,4 +1,4 @@
-module tb_lif_neuron_fixedpoint;
+module top;
 
     logic clk = 0;
     logic rst;
@@ -8,7 +8,7 @@ module tb_lif_neuron_fixedpoint;
 
     // Instantiate the neuron
     lif_neuron_fixedpoint #(
-        .THRESHOLD(8'd64),       // 4.0
+        .THRESHOLD(8'd60),       // 3.75
         .LEAK_FACTOR(8'd12)      // 0.75
     ) dut (
         .clk(clk),
@@ -41,20 +41,20 @@ module tb_lif_neuron_fixedpoint;
 
         // Test 1: No input, just leak
         $display("\nTest 1: No input (leak test)");
-        repeat (5) tick(0);
+        repeat (10) tick(0);
 
         // Test 2: Accumulating input to cause spike
         $display("\nTest 2: Accumulate to threshold");
-        repeat (6) tick(1);  // Should spike near 4.0
+        repeat (15) tick(1);  // Should spike near 4.0
 
         // Test 3: Constant input post-spike reset
         $display("\nTest 3: Verify reset after spike");
-        repeat (4) tick(1);
+        repeat (15) tick(1);
 
         // Test 4: Leak after single spike input
         $display("\nTest 4: One input then decay");
         tick(1);  // Add one input
-        repeat (6) tick(0);  // Leak down
+        repeat (15) tick(0);  // Leak down
 
         // Test 5: Strong single spike (force threshold manually)
         $display("\nTest 5: Force immediate spike (manually load potential)");
