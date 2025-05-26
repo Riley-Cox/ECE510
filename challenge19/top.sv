@@ -1,14 +1,19 @@
-module tb_lif_neuron;
+module tb_lif_neuron_fixedpoint;
 
-    logic clk = 0, rst;
-    logic [3:0] input_current;
+    logic clk = 0;
+    logic rst;
+    logic input_spike;
     logic spike;
-    logic [3:0] potential;
+    logic [7:0] potential;
 
-    lif_neuron dut (
+    // Instantiate the neuron
+    lif_neuron_fixedpoint #(
+        .THRESHOLD(8'd64),       // 4.0
+        .LEAK_FACTOR(8'd12)      // 0.75
+    ) dut (
         .clk(clk),
         .rst(rst),
-        .input_current(input_current),
+        .input_spike(input_spike),
         .spike(spike),
         .potential(potential)
     );
@@ -17,56 +22,48 @@ module tb_lif_neuron;
     always #5 clk = ~clk;
 
     task reset();
-        rst = 1; input_current = 0;
+        rst = 1;
+        input_spike = 0;
         @(posedge clk);
         rst = 0;
     endtask
 
-    task check(string test_name, int expected_spike, int expected_pot);
-        if (spike !== expected_spike || potential !== expected_pot) begin
-            $display("FAIL [%s] @ time %0t: spike=%0b (exp=%0b), pot=%0d (exp=%0d)", 
-                test_name, $time, spike, expected_spike, potential, expected_pot);
-        end else begin
-            $display("PASS [%s] @ time %0t", test_name, $time);
-        end
+    task tick(input logic in);
+        input_spike = in;
+        @(posedge clk);
+        $display("Time %0t | In=%0b | Spike=%0b | Pot=%0d (Q4.4 = %0f)",
+                 $time, in, spike, potential, potential / 16.0);
     endtask
 
     initial begin
-        $display("Starting LIF neuron testbench...");
+        $display("Starting fixed-point LIF neuron testbench...");
         reset();
 
-        // Test 1: Constant subthreshold input (3 < THRESHOLD=8)
-        input_current = 3;
-        repeat (5) begin
-            @(posedge clk);
-            check("Subthreshold input", 0, potential);
-        end
+        // Test 1: No input, just leak
+        $display("\nTest 1: No input (leak test)");
+        repeat (5) tick(0);
 
-        // Test 2: Accumulate to threshold
+        // Test 2: Accumulating input to cause spike
+        $display("\nTest 2: Accumulate to threshold");
+        repeat (6) tick(1);  // Should spike near 4.0
+
+        // Test 3: Constant input post-spike reset
+        $display("\nTest 3: Verify reset after spike");
+        repeat (4) tick(1);
+
+        // Test 4: Leak after single spike input
+        $display("\nTest 4: One input then decay");
+        tick(1);  // Add one input
+        repeat (6) tick(0);  // Leak down
+
+        // Test 5: Strong single spike (force threshold manually)
+        $display("\nTest 5: Force immediate spike (manually load potential)");
         reset();
-        input_current = 3;
-        repeat (2) @(posedge clk);  // Should not spike
-        input_current = 4; @(posedge clk);  // Should spike now
-        check("Accumulate to threshold", 1, 0);
+        force dut.potential = 8'd64;  // Set to threshold
+        tick(0);  // Should spike immediately
+        release dut.potential;
 
-        // Test 3: Leak with no input
-        reset();
-        input_current = 5;
-        @(posedge clk); // potential = 5 - 1 = 4
-        input_current = 0;
-        @(posedge clk); // potential = 4 - 1 = 3
-        @(posedge clk); // potential = 2
-        @(posedge clk); // potential = 1
-        @(posedge clk); // potential = 0
-        check("Leak with no input", 0, 0);
-
-        // Test 4: Strong input causing immediate spike
-        reset();
-        input_current = 8; // ≥ THRESHOLD
-        @(posedge clk);
-        check("Strong input immediate spike", 1, 0);
-
-        $display("All tests completed.");
+        $display("\nAll tests completed.");
         $finish;
     end
 
