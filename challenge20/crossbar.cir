@@ -1,0 +1,43 @@
+* 4x4 Resistive Crossbar Array with Proper Current Measurement
+
+* Input voltages (input vector: [0.5, 0.3, 0.7, 1.0])
+V1 in1 0 DC 0.5
+V2 in2 0 DC 0.3
+V3 in3 0 DC 0.7
+V4 in4 0 DC 1.0
+
+* Crossbar resistors (weights = 1 / R)
+* Column 1
+R11 in1 out1 1k
+R21 in2 out1 2k
+R31 in3 out1 1k
+R41 in4 out1 4k
+
+* Column 2
+R12 in1 out2 2k
+R22 in2 out2 2k
+R32 in3 out2 1k
+R42 in4 out2 1k
+
+* Column 3
+R13 in1 out3 1k
+R23 in2 out3 1k
+R33 in3 out3 2k
+R43 in4 out3 2k
+
+* Column 4
+R14 in1 out4 4k
+R24 in2 out4 1k
+R34 in3 out4 2k
+R44 in4 out4 1k
+
+* Current measurement with 0V voltage sources
+Vmeas1 out1 0 DC 0
+Vmeas2 out2 0 DC 0
+Vmeas3 out3 0 DC 0
+Vmeas4 out4 0 DC 0
+
+* Simulation command
+.op
+.end
+
