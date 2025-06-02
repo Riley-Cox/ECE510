@@ -17,7 +17,7 @@ module conv3x3_streaming_top_multi #(
 );
 
   logic [DATA_WIDTH-1:0] window_ch [0:NUM_CHANNELS-1][0:2][0:2];
-  logic window_valid [0:NUM_CHANNELS-1];
+  logic [0:NUM_CHANNELS-1] window_valid;
   logic all_valid;
   logic signed [RESULT_WIDTH-1:0] pooled_pixel_out [NUM_OUTPUTS-1:0];
   logic [NUM_OUTPUTS-1:0] pool_valid ;
@@ -82,8 +82,8 @@ module conv3x3_streaming_top_multi #(
     end
   endgenerate
 
-  assign valid_out  = &pool_valid;
-  assign all_valid = window_valid[0] & window_valid[1] & window_valid[2];
+  assign valid_out  = |pool_valid;
+  assign all_valid = &window_valid;
 
   conv3x3_multi_channel_core #(
     .DATA_WIDTH(DATA_WIDTH),
@@ -101,13 +101,13 @@ module conv3x3_streaming_top_multi #(
     .valid_out(conv_valid)
   );
 
-  always_ff @(posedge clk) begin
+/*  always_ff @(posedge clk) begin
     if(conv_valid) begin
       $display("CONV OUTPUT @ time %0t: ", $time);
       for (i = 0; i < NUM_OUTPUTS; i++) begin
         $display("  result_internal[%0d] = %0d", i, result_internal[i]);
       end
     end
-  end
+  end*/
 
 endmodule

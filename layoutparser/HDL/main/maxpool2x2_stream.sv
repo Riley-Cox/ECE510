@@ -1,5 +1,3 @@
-
-
 module maxpool2x2_stream #(
   parameter DATA_WIDTH = 24,
   parameter IMG_WIDTH = 4,
@@ -25,7 +23,6 @@ module maxpool2x2_stream #(
   logic toggle_d;
   logic next_valid, pool_ready;
 
-  logic load_window;
   int i;
 
   logic signed [DATA_WIDTH-1:0] max0, max1;
@@ -52,14 +49,14 @@ module maxpool2x2_stream #(
     
     end else begin
       valid_out <= 0;
-      load_window <= 0;
       if (valid_in) begin
         line_buf[toggle][col_count] <= pixel_in;
         toggle_d <= toggle;
         col_count_d <= col_count;
         if (row_count >= 2)
           pool_ready <= 1;
-      if (toggle_d && col_count_d >= 1 && valid_in && (col_count_d % 2 == 1) && pool_ready) begin
+      if (toggle_d && col_count_d >= 1 && valid_in &&  pool_ready &&
+col_count_d < IMG_WIDTH && ) begin
         win_buf[0][0] <= line_buf[~toggle_d][col_count_d - 1];
         win_buf[0][1] <= line_buf[~toggle_d][col_count_d];
         win_buf[1][0] <= line_buf[toggle_d][col_count_d - 1];
@@ -75,11 +72,6 @@ module maxpool2x2_stream #(
       end
     end
   end
-  if(valid_out) begin
-    $display("POOLING WINDOW: [%0d %0d] [%0d %0d] => %0d",win_buf[0][0], win_buf[0][1], win_buf[1][0], win_buf[1][1], pixel_out); 
-  end
 end
 
 endmodule
-      
-
