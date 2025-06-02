@@ -68,7 +68,7 @@ module conv3x3_streaming_top_multi #(
     for (p = 0; p < NUM_OUTPUTS; p++) begin : pool_block
       maxpool2x2_stream #(
         .DATA_WIDTH(RESULT_WIDTH),
-        .IMG_WIDTH(IMG_WIDTH / 2),
+        .IMG_WIDTH(IMG_WIDTH),
         .IMG_HEIGHT(IMG_HEIGHT)
       ) pool_inst (
         .clk(clk),

@@ -53,9 +53,9 @@ module maxpool2x2_stream #(
         line_buf[toggle][col_count] <= pixel_in;
         toggle_d <= toggle;
         col_count_d <= col_count;
-        if (row_count >= 2)
+        if (row_count >= 1)
           pool_ready <= 1;
-      if (toggle_d && col_count_d >= 1 && valid_in &&  pool_ready && col_count_d < IMG_WIDTH) begin
+      if (toggle_d && (col_count[0]) && (row_count[0]) && valid_in &&  pool_ready && (col_count_d + 1) < IMG_WIDTH) begin
         win_buf[0][0] <= line_buf[~toggle_d][col_count_d - 1];
         win_buf[0][1] <= line_buf[~toggle_d][col_count_d];
         win_buf[1][0] <= line_buf[toggle_d][col_count_d - 1];
@@ -72,5 +72,4 @@ module maxpool2x2_stream #(
     end
   end
 end
-
 endmodule

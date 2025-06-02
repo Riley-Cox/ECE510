@@ -1,12 +1,12 @@
 module dual_stage_wrapper #(
   parameter DATA_WIDTH = 8,
   parameter RESULT_WIDTH = 24,
-  parameter IMG_WIDTH = 10,
-  parameter IMG_HEIGHT = 10,
+  parameter IMG_WIDTH = 20,
+  parameter IMG_HEIGHT = 20,
   parameter NUM_INPUT_CHANNELS = 3,
   parameter NUM_MID_CHANNELS = 4,
   parameter NUM_OUTPUT_CHANNELS = 4,
-  parameter NUM_FINAL_CHANNELS = 2
+  parameter NUM_FINAL_CHANNELS = 4
 )(
   input  logic clk,
   input  logic rst_n,
@@ -85,5 +85,16 @@ module dual_stage_wrapper #(
     .result(result),
     .valid_out(valid_out)
   );
+  int i;
+  initial i = 0;
+  always @(posedge clk)
+    if (stage1.valid_out == 1) begin
+      i++;
+      $display("counter: %d",i);
+      end
+  /*always @(posedge clk)
+    if(stage2.valid_in)
+      $display("Stage1_out: %0d %0d %0d %0d",stage1_out[0], stage1_out[1],
+stage1_out[2], stage1_out[3]);*/
 endmodule
 
