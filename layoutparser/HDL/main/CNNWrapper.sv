@@ -85,11 +85,5 @@ module dual_stage_wrapper #(
     .result(result),
     .valid_out(valid_out)
   );
-  always @(posedge clk)
-    if (valid_out) 
-      $display("Result is; %p", result);
-  always @(posedge clk)
-    if (stage2_valid)
-      $display("stage2_out: %0d %0d %0d %0d", stage2_out[0], stage2_out[1], stage2_out[2], stage2_out[3]);
 endmodule
 

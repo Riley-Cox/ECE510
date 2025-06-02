@@ -135,7 +135,6 @@ module top;
 
   always @(posedge clk) begin
     if (valid_out) begin
-      $display("Valid_out is high");
       $fwrite(result_fd, "Final Output: ");
       for (int f = 0; f < NUM_FINAL_CHANNELS; f++) begin
         $fwrite(result_fd, "%0d ", result[f]);

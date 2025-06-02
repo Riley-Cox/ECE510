@@ -101,13 +101,5 @@ module conv3x3_streaming_top_multi #(
     .valid_out(conv_valid)
   );
 
-/*  always_ff @(posedge clk) begin
-    if(conv_valid) begin
-      $display("CONV OUTPUT @ time %0t: ", $time);
-      for (i = 0; i < NUM_OUTPUTS; i++) begin
-        $display("  result_internal[%0d] = %0d", i, result_internal[i]);
-      end
-    end
-  end*/
 
 endmodule
