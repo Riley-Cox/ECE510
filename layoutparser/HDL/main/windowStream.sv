@@ -1,7 +1,8 @@
 module window_3x3_stream #(
   parameter DATA_WIDTH = 8,
   parameter IMG_WIDTH  = 5,
-  parameter IMG_HEIGHT = 5
+  parameter IMG_HEIGHT = 5,
+  parameter CHANNEL_ID = 1
 )(
   input  logic clk,
   input  logic rst_n,
@@ -20,16 +21,35 @@ module window_3x3_stream #(
   
   logic [$clog2(IMG_WIDTH*IMG_HEIGHT):0] pixel_count;
 
+  logic valid_out_d,compute_valid, window_ready;
+
+
   integer col_counter,row_counter;
+  assign compute_valid = (valid_in && row_counter >= 0 && col_counter >= 0);
+int i,j;
+
+  always_ff @(posedge clk or negedge rst_n) begin
+    if(!rst_n)
+      valid_out_d <= 0;
+    else
+      valid_out_d <= compute_valid;
+  end
+assign window_ready = (pixel_count >= (IMG_WIDTH * 2 + 2));
+assign valid_out = valid_in && window_ready && row_counter >=2 && col_counter >=2 && row_counter < IMG_HEIGHT && col_counter < IMG_WIDTH;
+  int k;  
+/*always @(posedge clk)
+  if (valid_out) begin
+      k++;
+    $display("WS[%0d] output count = %0d",CHANNEL_ID, k );
+  end*/
 
   always_ff @(posedge clk or negedge rst_n) begin
   int i;
     if (!rst_n) begin
       col_counter <= 0;
       row_counter <= 0;
-      valid_out   <= 0;
       pixel_count <= 0;
-    end else if (valid_in) begin
+    end else if (valid_in && pixel_count < IMG_WIDTH * IMG_HEIGHT) begin
       for (i = 2; i > 0; i = i - 1) begin
         shift_reg0[i] <= shift_reg0[i-1];
         shift_reg1[i] <= shift_reg1[i-1];
@@ -46,17 +66,11 @@ module window_3x3_stream #(
 
       if (col_counter == IMG_WIDTH-1) begin
         col_counter <= 0;
+        if (row_counter != IMG_HEIGHT -1)
         row_counter <= row_counter +1;
       end
       else
         col_counter <= col_counter + 1;
-
-      if (col_counter >= 2 && row_counter >=2 && pixel_count < (IMG_WIDTH * IMG_HEIGHT))
-        valid_out <= 1;
-      else
-        valid_out <= 0;
-    end else begin
-      valid_out <= 0;
     end
   end
 

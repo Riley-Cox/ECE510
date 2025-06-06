@@ -24,9 +24,9 @@ module conv3x3_streaming_top_multi #(
   logic signed [RESULT_WIDTH-1:0] result_internal [0:NUM_OUTPUTS-1];
   logic signed [RESULT_WIDTH-1:0] result_reg [NUM_OUTPUTS-1:0];
   logic conv_valid, conv_valid_reg;
+  logic drain;
 
   int i;
-
 
   always_ff @(posedge clk or negedge rst_n) begin
     if(!rst_n) begin
@@ -51,7 +51,8 @@ module conv3x3_streaming_top_multi #(
       window_3x3_stream #(
         .DATA_WIDTH(DATA_WIDTH),
         .IMG_WIDTH(IMG_WIDTH),
-        .IMG_HEIGHT(IMG_HEIGHT)
+        .IMG_HEIGHT(IMG_HEIGHT),
+        .CHANNEL_ID(c)
       ) win_gen (
         .clk(clk),
         .rst_n(rst_n),
@@ -63,24 +64,6 @@ module conv3x3_streaming_top_multi #(
     end
   endgenerate
 
-  genvar p;
-  generate
-    for (p = 0; p < NUM_OUTPUTS; p++) begin : pool_block
-      maxpool2x2_stream #(
-        .DATA_WIDTH(RESULT_WIDTH),
-        .IMG_WIDTH(IMG_WIDTH),
-        .IMG_HEIGHT(IMG_HEIGHT)
-      ) pool_inst (
-        .clk(clk),
-        .rst_n(rst_n),
-        .valid_in(conv_valid_reg),
-        .pixel_in(result_reg[p]),
-        .valid_out(pool_valid[p]),
-        .pixel_out(pooled_pixel_out[p])
-      );
-      assign result[p] = pooled_pixel_out[p];
-    end
-  endgenerate
 
   assign valid_out  = |pool_valid;
   assign all_valid = &window_valid;
@@ -100,6 +83,23 @@ module conv3x3_streaming_top_multi #(
     .result(result_internal),
     .valid_out(conv_valid)
   );
-
+  genvar p;
+  generate
+    for (p = 0; p < NUM_OUTPUTS; p++) begin : pool_block
+      maxpool2x2_stream #(
+        .DATA_WIDTH(RESULT_WIDTH),
+        .IMG_WIDTH(IMG_WIDTH),
+        .IMG_HEIGHT(IMG_HEIGHT)
+      ) pool_inst (
+        .clk(clk),
+        .rst_n(rst_n),
+        .valid_in(conv_valid_reg),
+        .pixel_in(result_reg[p]),
+        .valid_out(pool_valid[p]),
+        .pixel_out(pooled_pixel_out[p])
+      );
+      assign result[p] = pooled_pixel_out[p];
+    end
+  endgenerate
 
 endmodule

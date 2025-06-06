@@ -17,18 +17,37 @@ module conv3x3_multi_channel_core #(
   logic signed [RESULT_WIDTH-1:0] conv_sum [0:NUM_OUTPUTS-1];
   logic signed [RESULT_WIDTH-1:0] relu_result [0:NUM_OUTPUTS-1];
 
+  logic valid_in_d;
+int i;
+always @(posedge clk)
+  if(valid_out)
+    $display("CNN output: %0d %0d %0d %0d time: %0d",result[0],result[1],result[2],result[3], $time);
+
+
+always_ff @(posedge clk or negedge rst_n) begin
+  if (!rst_n)
+    valid_in_d <= 0;
+  else
+    valid_in_d <= valid_in;
+  end
+
+  logic signed [RESULT_WIDTH-1:0] acc;
+
   always_comb begin
   int o,c,i,j;
+  acc = 0;
   for (o = 0; o < NUM_OUTPUTS; o++) begin
-    conv_sum[o] = bias[o];
+    if (valid_in_d) begin
+    acc = bias[o];
     for (c = 0; c < NUM_CHANNELS; c++) begin
       for (i = 0; i < 3; i++) begin
         for (j = 0; j < 3; j++) begin
-          conv_sum[o] += data_in[c][i][j] * kernel[o][c][i][j];
+          acc += data_in[c][i][j] * kernel[o][c][i][j];
         end
       end
     end
-    relu_result[o] = (conv_sum[o] > 0) ? conv_sum[o] : 0;
+    relu_result[o] = (acc > 0) ? acc : 0;
+  end
   end
   end
 
@@ -39,14 +58,14 @@ module conv3x3_multi_channel_core #(
       result[k]    <= 0;
       end
       valid_out <= 0;
-    end else if (valid_in) begin
+    end else if (valid_in_d) begin
       for (k = 0; k < NUM_OUTPUTS; k++) begin
       result[k]   <= relu_result[k];
       end
-      valid_out <= 1;
     end else begin
       valid_out <= 0;
     end
+      valid_out <= valid_in_d;
   end
 
 
