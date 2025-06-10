@@ -12,6 +12,7 @@ module top;
   parameter CH3_OUT = 64;
   parameter CH4_OUT = 64;
   parameter CH5_OUT = 2;
+  parameter CLK_PERIOD_NS = 10;
 
   parameter DATA_WIDTH   = 8;
   parameter RESULT_WIDTH = 32;
@@ -55,6 +56,9 @@ module top;
   logic signed [RESULT_WIDTH-1:0] bias5_flat [CH5_OUT];
   int idx, count;
 
+  int of,start_cycle, end_cycle, cycle_count;
+  bit started, finished;
+
   CNNWrapper dut (
     .clk(clk), .rst_n(rst_n), .valid_in(valid_in), .image_in(image_in),
     .kernel0(kernel0), .bias0(bias0),
@@ -69,9 +73,12 @@ initial count = 0;
   always #5 clk = ~clk;
 
   initial begin
+  $display("Loading image... ");
+  of = $fopen("hardware_out.txt", "w");
     rst_n = 0;
     valid_in = 0;
     #20 rst_n = 1;
+    
 
     $readmemh("mem_files/image_640x640_rgb.mem", image_mem);
     $readmemh("mem_files/kernel0_hex.mem", kernel0_flat);
@@ -151,12 +158,37 @@ initial count = 0;
         end
         valid_in = 1;
         @(posedge clk);
+        if (!started) begin
+          started = 1;
+          start_cycle = cycle_count;
+        end
       end
     end
     valid_in = 0;
 
 
+
   end
+
+  always_ff @(posedge clk) begin
+    cycle_count <= cycle_count + 1;
+      if(valid_out) begin
+        $fwrite(of, "OUT: %0d %0d", final_out[0], final_out[1]);
+        if(!finished) begin
+          end_cycle = cycle_count;
+            finished = 1;
+              $display("Hardware run completed!");
+              $display("Start cycle: %0d", start_cycle);
+              $display("End cycle: %0d", end_cycle);
+              $display("Latency: %0d cycles", end_cycle - start_cycle);
+              $display("Latency: %.2f ms", (end_cycle - start_cycle) * CLK_PERIOD_NS * 1e-6); 
+          end
+        end
+      if (finished && cycle_count - end_cycle > 100) begin
+        $fclose(of);
+          $finish;
+      end
+    end
   initial begin
     wait (valid_out === 1'b1);
       @(posedge clk);

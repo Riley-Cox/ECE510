@@ -48,7 +48,7 @@ module CNNWrapper #(
         .IMG_WIDTH(640), .IMG_HEIGHT(640),
         .DATA_WIDTH(DATA_WIDTH), .RESULT_WIDTH(RESULT_WIDTH),
         .NUM_CHANNELS(CH0_IN), .NUM_OUTPUTS(CH0_OUT),
-        .USE_POOL(1),
+        .USE_POOL(0),
         .STATE_ID(0)
     ) stage0 (
         .clk(clk), .rst_n(rst_n),
@@ -65,7 +65,7 @@ module CNNWrapper #(
         .IMG_WIDTH(319), .IMG_HEIGHT(319),
         .DATA_WIDTH(RESULT_WIDTH), .RESULT_WIDTH(RESULT_WIDTH),
         .NUM_CHANNELS(CH0_OUT), .NUM_OUTPUTS(CH1_OUT),
-        .USE_POOL(1),
+        .USE_POOL(0),
         .STATE_ID(1)
     ) stage1 (
         .clk(clk), .rst_n(rst_n),
@@ -83,7 +83,7 @@ module CNNWrapper #(
         .IMG_WIDTH(158), .IMG_HEIGHT(158),
         .DATA_WIDTH(RESULT_WIDTH), .RESULT_WIDTH(RESULT_WIDTH),
         .NUM_CHANNELS(CH1_OUT), .NUM_OUTPUTS(CH2_OUT),
-        .USE_POOL(1),
+        .USE_POOL(0),
         .STATE_ID(2)
     ) stage2 (
         .clk(clk), .rst_n(rst_n),
@@ -101,7 +101,7 @@ module CNNWrapper #(
         .IMG_WIDTH(78), .IMG_HEIGHT(78),
         .DATA_WIDTH(RESULT_WIDTH), .RESULT_WIDTH(RESULT_WIDTH),
         .NUM_CHANNELS(CH2_OUT), .NUM_OUTPUTS(CH3_OUT),
-        .USE_POOL(1),
+        .USE_POOL(0),
         .STATE_ID(3)
     ) stage3 (
         .clk(clk), .rst_n(rst_n),
@@ -119,7 +119,7 @@ module CNNWrapper #(
         .IMG_WIDTH(38), .IMG_HEIGHT(38),
         .DATA_WIDTH(RESULT_WIDTH), .RESULT_WIDTH(RESULT_WIDTH),
         .NUM_CHANNELS(CH3_OUT), .NUM_OUTPUTS(CH4_OUT),
-        .USE_POOL(1),
+        .USE_POOL(0),
         .STATE_ID(4)
     ) stage4 (
         .clk(clk), .rst_n(rst_n),

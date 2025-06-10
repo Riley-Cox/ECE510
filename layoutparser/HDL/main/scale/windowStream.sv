@@ -2,7 +2,8 @@ module window_3x3_stream #(
   parameter DATA_WIDTH = 8,
   parameter IMG_WIDTH  = 5,
   parameter IMG_HEIGHT = 5,
-  parameter CHANNEL_ID = 1
+  parameter CHANNEL_ID = 1,
+  parameter STRIDE = 1
 )(
   input  logic clk,
   input  logic rst_n,
@@ -35,7 +36,7 @@ int i,j;
       valid_out_d <= compute_valid;
   end
 assign window_ready = (pixel_count >= (IMG_WIDTH * 2 + 2));
-assign valid_out = valid_in && window_ready && row_counter >=2 && col_counter >=2 && row_counter < IMG_HEIGHT && col_counter < IMG_WIDTH;
+assign valid_out = valid_in && window_ready && (row_counter >=2 && col_counter >=2) && row_counter < IMG_HEIGHT && col_counter < IMG_WIDTH;
 
   always_ff @(posedge clk or negedge rst_n) begin
   int i;
